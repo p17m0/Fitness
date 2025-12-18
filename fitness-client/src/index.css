@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-dark;
+  }
+  body {
+    @apply bg-gray-light text-gray-dark;
+    font-family: 'Courier New', monospace;
+  }
+}
+
+@layer components {
+  .brutal-border {
+    @apply border-8 border-gray-dark;
+  }
+
+  .brutal-shadow {
+    box-shadow: 8px 8px 0px 0px #2C2C2C;
+  }
+
+  .brutal-button {
+    @apply bg-orange-primary text-white font-black text-lg px-8 py-4 border-4 border-gray-dark uppercase tracking-wider;
+    box-shadow: 6px 6px 0px 0px #2C2C2C;
+    transition: all 0.1s ease;
+  }
+
+  .brutal-button:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 4px 4px 0px 0px #2C2C2C;
+  }
+
+  .brutal-card {
+    @apply bg-white p-8 border-8 border-gray-dark;
+    box-shadow: 12px 12px 0px 0px #2C2C2C;
+  }
+
+  .brutal-title {
+    @apply text-5xl font-black uppercase tracking-wider text-orange-primary mb-6;
+  }
+
+  .brutal-subtitle {
+    @apply text-2xl font-bold uppercase tracking-wide text-gray-dark mb-4;
+  }
+
+  .brutal-text {
+    @apply text-lg font-bold leading-relaxed text-gray-dark;
+  }
+}
+
