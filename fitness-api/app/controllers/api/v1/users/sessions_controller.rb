@@ -8,10 +8,18 @@ class Api::V1::Users::SessionsController < Devise::SessionsController
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
-      render json: { status: 'success', user: resource }, status: :created
+      render json: { status: 'success', user: resource, token: jwt_token(resource) }, status: :ok
     else
       render json: { status: 'error', errors: resource.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  def respond_to_on_destroy
+    head :no_content
+  end
+
+  def jwt_token(resource)
+    request.env['warden-jwt_auth.token'] || resource.generate_token
   end
   # skip_before_action :authenticate_user!, only: [:create]
   # respond_to :json

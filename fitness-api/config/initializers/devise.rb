@@ -314,7 +314,19 @@ Devise.setup do |config|
   # JWT
 
   config.jwt do |jwt|
-    jwt.secret = "fuck"
-    #jwt.secret = Rails.application.credentials.devise_jwt_secret_key!
+    jwt.secret = ENV.fetch('JWT_SECRET_KEY') do
+      Rails.application.credentials.dig(:devise, :jwt_secret_key) || Rails.application.secret_key_base
+    end
+
+    jwt.dispatch_requests = [
+      ['POST', %r{^/api/v1/users/sign_in$}],
+      ['POST', %r{^/api/v1/users$}]
+    ]
+
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/api/v1/users/sign_out$}]
+    ]
+
+    jwt.expiration_time = 14.days.to_i
   end
 end

@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class Api::V1::Users::RegistrationsController < Devise::RegistrationsController
-  # before_action :configure_sign_up_params, only: [:create]
-  # before_action :configure_account_update_params, only: [:update]
+  respond_to :json
 
   # GET /resource/sign_up
   # def new
@@ -63,9 +62,13 @@ class Api::V1::Users::RegistrationsController < Devise::RegistrationsController
   private
     def respond_with(resource, _opts = {})
       if resource.persisted?
-        render json: { status: 'success', user: resource, token: resource.generate_token }, status: :created
+        render json: { status: 'success', user: resource, token: jwt_token(resource) }, status: :created
       else
         render json: { status: 'error', errors: resource.errors.full_messages }, status: :unprocessable_entity
       end
+    end
+
+    def jwt_token(resource)
+      request.env['warden-jwt_auth.token'] || resource.generate_token
     end
 end
