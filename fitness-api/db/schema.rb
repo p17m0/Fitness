@@ -46,14 +46,105 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_120416) do
     t.index ["user_id"], name: "index_allowlisted_jwts_on_user_id"
   end
 
+  create_table "bookings", force: :cascade do |t|
+    t.integer "client_id", null: false
+    t.integer "coach_slot_id"
+    t.datetime "created_at", null: false
+    t.integer "gym_slot_id", null: false
+    t.string "status", default: "booked", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "gym_slot_id"], name: "index_bookings_on_client_id_and_gym_slot_id", unique: true
+    t.index ["client_id"], name: "index_bookings_on_client_id"
+    t.index ["coach_slot_id"], name: "index_bookings_on_coach_slot_id"
+    t.index ["gym_slot_id"], name: "index_bookings_on_gym_slot_id"
+  end
+
+  create_table "client_subscriptions", force: :cascade do |t|
+    t.integer "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.integer "remaining_visits", default: 0, null: false
+    t.string "status", default: "active", null: false
+    t.integer "subscription_plan_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_client_subscriptions_on_client_id"
+    t.index ["subscription_plan_id"], name: "index_client_subscriptions_on_subscription_plan_id"
+  end
+
   create_table "clients", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  create_table "coach_slots", force: :cascade do |t|
+    t.integer "coach_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "ends_at", null: false
+    t.integer "gym_slot_id"
+    t.datetime "starts_at", null: false
+    t.string "status", default: "available", null: false
+    t.datetime "updated_at", null: false
+    t.index ["coach_id", "starts_at", "ends_at"], name: "index_coach_slots_on_coach_id_and_starts_at_and_ends_at", unique: true
+    t.index ["coach_id"], name: "index_coach_slots_on_coach_id"
+    t.index ["gym_slot_id"], name: "index_coach_slots_on_gym_slot_id"
+  end
+
   create_table "coaches", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "gym_slots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "ends_at", null: false
+    t.integer "gym_id", null: false
+    t.datetime "starts_at", null: false
+    t.string "status", default: "available", null: false
+    t.datetime "updated_at", null: false
+    t.index ["gym_id", "starts_at", "ends_at"], name: "index_gym_slots_on_gym_id_and_starts_at_and_ends_at", unique: true
+    t.index ["gym_id"], name: "index_gym_slots_on_gym_id"
+  end
+
+  create_table "gyms", force: :cascade do |t|
+    t.string "address", default: "", null: false
+    t.integer "capacity", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "currency", default: "RUB", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.integer "price_cents", default: 0, null: false
+    t.integer "purchasable_id", null: false
+    t.string "purchasable_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["purchasable_type", "purchasable_id"], name: "index_products_on_purchasable"
+  end
+
+  create_table "programs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "currency", default: "RUB", null: false
+    t.text "description"
+    t.integer "duration_minutes", default: 60, null: false
+    t.string "name", null: false
+    t.integer "price_cents", default: 0, null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "subscription_plans", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "currency", default: "RUB", null: false
+    t.text "description"
+    t.integer "duration_days", default: 30, null: false
+    t.string "name", null: false
+    t.integer "price_cents", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "visits_count", default: 1, null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -78,4 +169,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_120416) do
   end
 
   add_foreign_key "allowlisted_jwts", "users", on_delete: :cascade
+  add_foreign_key "bookings", "clients"
+  add_foreign_key "bookings", "coach_slots"
+  add_foreign_key "bookings", "gym_slots"
+  add_foreign_key "client_subscriptions", "clients"
+  add_foreign_key "client_subscriptions", "subscription_plans"
+  add_foreign_key "coach_slots", "coaches"
+  add_foreign_key "coach_slots", "gym_slots"
+  add_foreign_key "gym_slots", "gyms"
 end

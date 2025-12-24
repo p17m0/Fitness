@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,47 +8,253 @@
   * {
     @apply border-gray-dark;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-gray-light text-gray-dark;
-    font-family: 'Courier New', monospace;
+    @apply bg-cream text-gray-dark font-body;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    @apply bg-orange-primary text-white;
   }
 }
 
 @layer components {
+  /* ===== BRUTALIST BORDERS & SHADOWS ===== */
   .brutal-border {
-    @apply border-8 border-gray-dark;
+    @apply border-4 border-gray-dark;
   }
 
   .brutal-shadow {
-    box-shadow: 8px 8px 0px 0px #2C2C2C;
+    box-shadow: 6px 6px 0px 0px #1A1A1A;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
   }
 
+  .brutal-shadow-lg {
+    box-shadow: 10px 10px 0px 0px #1A1A1A;
+  }
+
+  .brutal-shadow-sm {
+    box-shadow: 4px 4px 0px 0px #1A1A1A;
+  }
+
+  /* ===== BUTTONS ===== */
   .brutal-button {
-    @apply bg-orange-primary text-white font-black text-lg px-8 py-4 border-4 border-gray-dark uppercase tracking-wider;
-    box-shadow: 6px 6px 0px 0px #2C2C2C;
-    transition: all 0.1s ease;
+    @apply bg-orange-primary text-white font-display font-bold text-sm px-6 py-3 border-4 border-gray-dark uppercase tracking-wider;
+    box-shadow: 5px 5px 0px 0px #1A1A1A;
+    transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .brutal-button:hover {
+  .brutal-button:hover:not(:disabled) {
     transform: translate(2px, 2px);
-    box-shadow: 4px 4px 0px 0px #2C2C2C;
+    box-shadow: 3px 3px 0px 0px #1A1A1A;
+    @apply bg-orange-dark;
   }
 
+  .brutal-button:active:not(:disabled) {
+    transform: translate(4px, 4px);
+    box-shadow: 1px 1px 0px 0px #1A1A1A;
+  }
+
+  .brutal-button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .brutal-button-secondary {
+    @apply brutal-button bg-white text-gray-dark;
+  }
+
+  .brutal-button-secondary:hover:not(:disabled) {
+    @apply bg-gray-light;
+  }
+
+  .brutal-button-danger {
+    @apply brutal-button bg-error;
+  }
+
+  .brutal-button-danger:hover:not(:disabled) {
+    @apply bg-red-600;
+  }
+
+  /* ===== CARDS ===== */
   .brutal-card {
-    @apply bg-white p-8 border-8 border-gray-dark;
-    box-shadow: 12px 12px 0px 0px #2C2C2C;
+    @apply bg-white p-6 md:p-8 border-4 border-gray-dark;
+    box-shadow: 10px 10px 0px 0px #1A1A1A;
   }
 
+  .brutal-card-interactive {
+    @apply brutal-card cursor-pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .brutal-card-interactive:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 13px 13px 0px 0px #1A1A1A;
+  }
+
+  .brutal-card-interactive:active {
+    transform: translate(2px, 2px);
+    box-shadow: 8px 8px 0px 0px #1A1A1A;
+  }
+
+  /* ===== TYPOGRAPHY ===== */
   .brutal-title {
-    @apply text-5xl font-black uppercase tracking-wider text-orange-primary mb-6;
+    @apply text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-gray-dark mb-4;
+    letter-spacing: -0.02em;
+  }
+
+  .brutal-title-accent {
+    @apply brutal-title text-orange-primary;
   }
 
   .brutal-subtitle {
-    @apply text-2xl font-bold uppercase tracking-wide text-gray-dark mb-4;
+    @apply text-xl md:text-2xl font-display font-bold uppercase tracking-wide text-gray-dark mb-3;
   }
 
   .brutal-text {
-    @apply text-lg font-bold leading-relaxed text-gray-dark;
+    @apply text-base md:text-lg font-body font-medium leading-relaxed text-gray-medium;
+  }
+
+  .brutal-label {
+    @apply font-display font-bold text-xs uppercase tracking-wider text-gray-medium mb-2 block;
+  }
+
+  /* ===== FORM INPUTS ===== */
+  .brutal-input {
+    @apply w-full p-3 border-4 border-gray-dark font-body font-medium bg-white;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-0;
+    box-shadow: 3px 3px 0px 0px #1A1A1A;
+  }
+
+  .brutal-input:focus {
+    box-shadow: 5px 5px 0px 0px #FF6B35;
+    border-color: #FF6B35;
+  }
+
+  .brutal-input::placeholder {
+    @apply text-gray-400;
+  }
+
+  .brutal-select {
+    @apply brutal-input appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231A1A1A' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+
+  /* ===== ALERTS & NOTIFICATIONS ===== */
+  .brutal-alert {
+    @apply border-4 border-gray-dark px-4 py-3 font-body font-semibold;
+    box-shadow: 4px 4px 0px 0px #1A1A1A;
+  }
+
+  .brutal-alert-success {
+    @apply brutal-alert bg-green-100 text-green-800;
+  }
+
+  .brutal-alert-error {
+    @apply brutal-alert bg-red-100 text-red-800;
+  }
+
+  .brutal-alert-warning {
+    @apply brutal-alert bg-yellow-100 text-yellow-800;
+  }
+
+  .brutal-alert-info {
+    @apply brutal-alert bg-blue-100 text-blue-800;
+  }
+
+  /* ===== BADGES ===== */
+  .brutal-badge {
+    @apply inline-flex items-center px-3 py-1 border-3 border-gray-dark font-display font-bold text-xs uppercase;
+    box-shadow: 2px 2px 0px 0px #1A1A1A;
+  }
+
+  .brutal-badge-primary {
+    @apply brutal-badge bg-orange-primary text-white;
+  }
+
+  .brutal-badge-secondary {
+    @apply brutal-badge bg-white text-gray-dark;
+  }
+
+  /* ===== SKELETON LOADER ===== */
+  .skeleton {
+    @apply bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded;
+    background-size: 200% 100%;
+    animation: skeleton 1.5s ease-in-out infinite;
+  }
+
+  /* ===== STAGGER ANIMATIONS ===== */
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
+  .stagger-6 { animation-delay: 0.6s; }
+
+  /* ===== LOADING SPINNER ===== */
+  .loader {
+    @apply w-5 h-5 border-3 border-white border-t-transparent rounded-full;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loader-dark {
+    @apply loader border-gray-dark border-t-transparent;
+  }
+
+  /* ===== TRANSITIONS ===== */
+  .page-transition {
+    @apply opacity-0;
+    animation: fadeInUp 0.4s ease-out forwards;
+  }
+
+  /* ===== SCROLLBAR STYLING ===== */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-light;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-dark border-4 border-gray-light;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-orange-primary;
+  }
+
+  /* ===== OVERLAY ===== */
+  .overlay {
+    @apply fixed inset-0 bg-black/50 z-40;
+    backdrop-filter: blur(4px);
+  }
+
+  /* ===== TOOLTIP ===== */
+  .tooltip {
+    @apply absolute z-50 px-3 py-2 text-sm font-body font-medium text-white bg-gray-dark border-2 border-gray-dark;
+    box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.3);
   }
 }
 
+/* ===== UTILITY FOR INITIAL OPACITY ===== */
+.animate-on-scroll {
+  opacity: 0;
+}
+
+/* ===== BORDER WIDTH UTILITIES ===== */
+@layer utilities {
+  .border-3 {
+    border-width: 3px;
+  }
+}

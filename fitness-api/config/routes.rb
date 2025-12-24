@@ -11,6 +11,20 @@ Rails.application.routes.draw do
     },
     defaults: { format: :json }
 
+  namespace :api do
+    namespace :v1 do
+      resources :gyms
+      resources :gym_slots
+      resources :programs
+      resources :subscription_plans
+      resources :products
+      resources :coach_slots
+      resources :client_subscriptions, only: [:index, :show, :create]
+      resources :bookings, only: [:index, :create, :destroy]
+      resources :coaches, only: [:index]
+    end
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

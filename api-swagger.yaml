@@ -1,0 +1,502 @@
+openapi: 3.0.3
+info:
+  title: Fitness API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        email: { type: string, format: email }
+        first_name: { type: string }
+        last_name: { type: string }
+        phone_number: { type: string }
+      required: [id, email]
+    Gym:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        address: { type: string }
+        description: { type: string, nullable: true }
+        capacity: { type: integer }
+      required: [id, name, address, capacity]
+    GymSlot:
+      type: object
+      properties:
+        id: { type: integer }
+        gym_id: { type: integer }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+        status: { type: string, enum: [available, booked, cancelled] }
+      required: [id, gym_id, starts_at, ends_at, status]
+    Program:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        duration_minutes: { type: integer }
+        price_cents: { type: integer }
+        currency: { type: string }
+      required: [id, name, duration_minutes, price_cents, currency]
+    SubscriptionPlan:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        visits_count: { type: integer }
+        duration_days: { type: integer }
+        price_cents: { type: integer }
+        currency: { type: string }
+      required: [id, name, visits_count, duration_days, price_cents, currency]
+    Product:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        price_cents: { type: integer }
+        currency: { type: string }
+        purchasable_type: { type: string }
+        purchasable_id: { type: integer }
+      required: [id, name, price_cents, currency, purchasable_type, purchasable_id]
+    CoachSlot:
+      type: object
+      properties:
+        id: { type: integer }
+        coach_id: { type: integer }
+        gym_slot_id: { type: integer, nullable: true }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+        status: { type: string, enum: [available, booked, cancelled] }
+      required: [id, coach_id, starts_at, ends_at, status]
+    ClientSubscription:
+      type: object
+      properties:
+        id: { type: integer }
+        subscription_plan_id: { type: integer }
+        remaining_visits: { type: integer }
+        expires_at: { type: string, format: date-time, nullable: true }
+        status: { type: string, enum: [active, expired] }
+      required: [id, subscription_plan_id, remaining_visits, status]
+    Booking:
+      type: object
+      properties:
+        id: { type: integer }
+        gym_slot_id: { type: integer }
+        coach_slot_id: { type: integer, nullable: true }
+        status: { type: string, enum: [booked, cancelled] }
+      required: [id, gym_slot_id, status]
+paths:
+  /api/v1/users:
+    post:
+      summary: Регистрация клиента
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email: { type: string }
+                    phone_number: { type: string }
+                    password: { type: string }
+                    first_name: { type: string }
+                    last_name: { type: string }
+                  required: [email, phone_number, password]
+            example:
+              user:
+                email: client@example.com
+                phone_number: "+79998887766"
+                password: "secret123"
+                first_name: "Иван"
+                last_name: "Иванов"
+      responses:
+        "201":
+          description: Успешная регистрация
+          content:
+            application/json:
+              example:
+                status: success
+                user:
+                  id: 1
+                  email: client@example.com
+                  phone_number: "+79998887766"
+                token: "jwt.token.here"
+        "422":
+          description: Ошибка валидации
+  /api/v1/users/sign_in:
+    post:
+      summary: Логин по email или телефону
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email: { type: string }
+                    phone_number: { type: string }
+                    password: { type: string }
+            examples:
+              email:
+                value:
+                  user:
+                    email: client@example.com
+                    password: secret123
+              phone:
+                value:
+                  user:
+                    phone_number: "+79998887766"
+                    password: secret123
+      responses:
+        "200":
+          description: Успешный логин
+          content:
+            application/json:
+              example:
+                status: success
+                user:
+                  id: 1
+                  email: client@example.com
+                token: "jwt.token.here"
+        "422":
+          description: Неверные креды
+  /api/v1/users/sign_out:
+    delete:
+      summary: Выход
+      security: [{ bearerAuth: [] }]
+      responses:
+        "204":
+          description: Вышел
+  /api/v1/gyms:
+    get:
+      summary: Список залов
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: "Главный зал"
+                  address: "Улица 1"
+                  capacity: 30
+    post:
+      summary: Создать зал
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              gym:
+                name: "Зал 2"
+                address: "Улица 2"
+                capacity: 20
+      responses:
+        "201": { description: Создан }
+  /api/v1/gyms/{id}:
+    get:
+      summary: Получить зал
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: OK }
+    patch:
+      summary: Обновить зал
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: OK }
+    delete:
+      summary: Удалить зал
+      security: [{ bearerAuth: [] }]
+      responses:
+        "204": { description: Удалён }
+  /api/v1/gym_slots:
+    get:
+      summary: Список слотов залов
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: gym_id
+          schema: { type: integer }
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                - id: 10
+                  gym_id: 1
+                  starts_at: "2025-12-25T10:00:00Z"
+                  ends_at: "2025-12-25T11:00:00Z"
+                  status: available
+    post:
+      summary: Создать слот
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              gym_slot:
+                gym_id: 1
+                starts_at: "2025-12-25T12:00:00Z"
+                ends_at: "2025-12-25T13:00:00Z"
+      responses:
+        "201": { description: Создан }
+  /api/v1/gym_slots/{id}:
+    get:
+      summary: Получить слот
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: OK }
+    patch:
+      summary: Обновить слот
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: OK }
+    delete:
+      summary: Удалить слот
+      security: [{ bearerAuth: [] }]
+      responses:
+        "204": { description: Удалён }
+  /api/v1/programs:
+    get:
+      summary: Список программ
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: "Фитнес базовый"
+                  duration_minutes: 60
+                  price_cents: 19900
+                  currency: RUB
+    post:
+      summary: Создать программу
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              program:
+                name: "Силовая"
+                description: "3 раза в неделю"
+                duration_minutes: 90
+                price_cents: 29900
+                currency: RUB
+      responses:
+        "201": { description: Создано }
+  /api/v1/programs/{id}:
+    get: { summary: Получить программу, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
+    patch: { summary: Обновить программу, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
+    delete: { summary: Удалить программу, security: [{ bearerAuth: [] }], responses: { "204": { description: Удалено } } }
+  /api/v1/subscription_plans:
+    get:
+      summary: Список абонементов
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: "10 посещений"
+                  visits_count: 10
+                  duration_days: 60
+                  price_cents: 49900
+                  currency: RUB
+    post:
+      summary: Создать абонемент
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              subscription_plan:
+                name: "5 посещений"
+                visits_count: 5
+                duration_days: 30
+                price_cents: 29900
+                currency: RUB
+      responses:
+        "201": { description: Создано }
+  /api/v1/subscription_plans/{id}:
+    get: { summary: Получить абонемент, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
+    patch: { summary: Обновить абонемент, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
+    delete: { summary: Удалить абонемент, security: [{ bearerAuth: [] }], responses: { "204": { description: Удалено } } }
+  /api/v1/products:
+    get:
+      summary: Список продуктов (обёртка над program/subscription_plan)
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: "10 посещений"
+                  price_cents: 49900
+                  currency: RUB
+                  purchasable_type: "SubscriptionPlan"
+                  purchasable_id: 1
+    post:
+      summary: Создать продукт
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              product:
+                name: "Персональная программа"
+                price_cents: 99900
+                currency: RUB
+                purchasable_type: "Program"
+                purchasable_id: 1
+      responses:
+        "201": { description: Создано }
+  /api/v1/products/{id}:
+    get: { summary: Получить продукт, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
+    patch: { summary: Обновить продукт, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
+    delete: { summary: Удалить продукт, security: [{ bearerAuth: [] }], responses: { "204": { description: Удалено } } }
+  /api/v1/coach_slots:
+    get:
+      summary: Список слотов тренеров
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: coach_id
+          schema: { type: integer }
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                - id: 5
+                  coach_id: 2
+                  gym_slot_id: 10
+                  starts_at: "2025-12-25T10:00:00Z"
+                  ends_at: "2025-12-25T11:00:00Z"
+                  status: available
+    post:
+      summary: Создать слот тренера
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              coach_slot:
+                coach_id: 2
+                gym_slot_id: 10
+                starts_at: "2025-12-25T12:00:00Z"
+                ends_at: "2025-12-25T13:00:00Z"
+      responses:
+        "201": { description: Создано }
+  /api/v1/coach_slots/{id}:
+    get: { summary: Получить слот, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
+    patch: { summary: Обновить слот, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
+    delete: { summary: Удалить слот, security: [{ bearerAuth: [] }], responses: { "204": { description: Удалено } } }
+  /api/v1/client_subscriptions:
+    get:
+      summary: Мои абонементы
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                - id: 3
+                  subscription_plan_id: 1
+                  remaining_visits: 7
+                  expires_at: "2026-01-20T00:00:00Z"
+                  status: active
+    post:
+      summary: Купить абонемент (привязать к клиенту)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              client_subscription:
+                subscription_plan_id: 1
+      responses:
+        "201": { description: Создано }
+  /api/v1/client_subscriptions/{id}:
+    get:
+      summary: Получить мой абонемент
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: OK }
+  /api/v1/bookings:
+    get:
+      summary: Мои бронирования
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                - id: 11
+                  gym_slot_id: 10
+                  coach_slot_id: 5
+                  status: booked
+    post:
+      summary: Забронировать зал (и тренера опционально)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            examples:
+              only_gym:
+                value:
+                  booking:
+                    gym_slot_id: 10
+              with_coach:
+                value:
+                  booking:
+                    gym_slot_id: 10
+                    coach_slot_id: 5
+      responses:
+        "201":
+          description: Забронировано
+          content:
+            application/json:
+              example:
+                id: 11
+                gym_slot_id: 10
+                coach_slot_id: 5
+                status: booked
+        "422":
+          description: Ошибка (нет посещений или слот недоступен)
+  /api/v1/bookings/{id}:
+    delete:
+      summary: Отменить бронирование
+      security: [{ bearerAuth: [] }]
+      responses:
+        "204": { description: Отменено }
+security:
+  - bearerAuth: []
