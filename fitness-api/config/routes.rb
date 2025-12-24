@@ -1,7 +1,16 @@
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
-  devise_for :users, ActiveAdmin::Devise.config
+
+  devise_for :users,
+    path: 'api/v1/users',
+    controllers: {
+      sessions: 'api/v1/users/sessions',
+      registrations: 'api/v1/users/registrations',
+      passwords: 'api/v1/users/passwords'
+    },
+    defaults: { format: :json }
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

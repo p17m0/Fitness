@@ -10,7 +10,7 @@ module FitnessApi
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
-
+    config.action_controller.default_protect_from_forgery = false
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
@@ -23,5 +23,15 @@ module FitnessApi
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins 'http://your.frontend.domain.com'
+        resource '/api/*',
+          headers: %w(Authorization),
+          methods: :any,
+          expose: %w(Authorization),
+          max_age: 600
+      end
+    end
   end
 end
