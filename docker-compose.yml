@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  fitness-api:
+    build:
+      context: ./fitness-api
+      dockerfile: Dockerfile.dev
+    container_name: fitness-api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./fitness-api:/rails
+      - fitness-api-bundle:/usr/local/bundle
+      - fitness-api-storage:/rails/storage
+    environment:
+      - RAILS_ENV=development
+      - PORT=3000
+      - BUNDLE_PATH=/usr/local/bundle
+    command: >
+      sh -c "
+        bundle install &&
+        bin/rails db:create db:migrate 2>/dev/null || true &&
+        bin/rails server -b 0.0.0.0
+      "
+    stdin_open: true
+    tty: true
+    networks:
+      - fitness-network
+
+  fitness-client:
+    build:
+      context: ./fitness-client
+      dockerfile: Dockerfile
+    container_name: fitness-client
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./fitness-client:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - fitness-network
+    depends_on:
+      - fitness-api
+
+volumes:
+  fitness-api-bundle:
+  fitness-api-storage:
+
+networks:
+  fitness-network:
+    driver: bridge
+
