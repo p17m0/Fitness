@@ -5,6 +5,12 @@ class ClientSubscription < ApplicationRecord
 
   enum :status, { active: "active", expired: "expired" }, suffix: true
 
+  scope :active_for_booking, lambda {
+    where(status: :active)
+      .where("remaining_visits > 0")
+      .where("expires_at IS NULL OR expires_at >= ?", Time.current)
+  }
+
   validates :remaining_visits, numericality: { greater_than_or_equal_to: 0 }
 
   before_validation :apply_defaults, on: :create
@@ -14,6 +20,10 @@ class ClientSubscription < ApplicationRecord
     self.remaining_visits -= 1
     self.status = :expired if remaining_visits.zero?
     save!
+  end
+
+  def active_for_booking?
+    active_status? && remaining_visits.positive? && (expires_at.nil? || expires_at >= Time.current)
   end
 
   private

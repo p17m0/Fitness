@@ -30,8 +30,61 @@ const validatePassword = (password: string): string | undefined => {
   return undefined;
 };
 
+const InputField: React.FC<{
+  icon: React.ElementType;
+  type?: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+  touched?: boolean;
+  required?: boolean;
+  showPasswordToggle?: boolean;
+  showPassword?: boolean;
+  onTogglePassword?: () => void;
+}> = ({
+  icon: Icon,
+  type = 'text',
+  placeholder,
+  value,
+  onChange,
+  error,
+  touched,
+  required,
+  showPasswordToggle,
+  showPassword,
+  onTogglePassword
+}) => (
+  <div className="space-y-1">
+    <div className="relative">
+      <Icon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+      <input
+        className={`brutal-input pl-10 ${showPasswordToggle ? 'pr-10' : ''} ${error && touched ? 'border-red-500 focus:border-red-500' : ''}`}
+        placeholder={placeholder}
+        type={showPasswordToggle && showPassword ? 'text' : type}
+        required={required}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {showPasswordToggle && onTogglePassword && (
+        <button
+          type="button"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          onClick={onTogglePassword}
+          tabIndex={-1}
+        >
+          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      )}
+    </div>
+    {error && touched && (
+      <p className="text-red-500 text-xs font-body font-medium animate-fade-in">{error}</p>
+    )}
+  </div>
+);
+
 export const AuthPage: React.FC = () => {
-  const { register, login, error, resetError, isAuthenticated, user, loading } = useAuth();
+  const { register, login, error, resetError, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
   const [actionLoading, setActionLoading] = useState(false);
@@ -138,54 +191,7 @@ export const AuthPage: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const InputField: React.FC<{
-    icon: React.ElementType;
-    type?: string;
-    placeholder: string;
-    value: string;
-    onChange: (value: string) => void;
-    error?: string;
-    touched?: boolean;
-    required?: boolean;
-    showPasswordToggle?: boolean;
-  }> = ({
-    icon: Icon,
-    type = 'text',
-    placeholder,
-    value,
-    onChange,
-    error,
-    touched,
-    required,
-    showPasswordToggle
-  }) => (
-    <div className="space-y-1">
-      <div className="relative">
-        <Icon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input
-          className={`brutal-input pl-10 ${showPasswordToggle ? 'pr-10' : ''} ${error && touched ? 'border-red-500 focus:border-red-500' : ''}`}
-          placeholder={placeholder}
-          type={showPasswordToggle && showPassword ? 'text' : type}
-          required={required}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
-        {showPasswordToggle && (
-          <button
-            type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            onClick={() => setShowPassword(!showPassword)}
-            tabIndex={-1}
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        )}
-      </div>
-      {error && touched && (
-        <p className="text-red-500 text-xs font-body font-medium animate-fade-in">{error}</p>
-      )}
-    </div>
-  );
+  const togglePassword = () => setShowPassword(!showPassword);
 
   return (
     <div className="container mx-auto max-w-lg">
@@ -262,6 +268,8 @@ export const AuthPage: React.FC = () => {
               touched={loginForm.password.touched}
               required
               showPasswordToggle
+              showPassword={showPassword}
+              onTogglePassword={togglePassword}
             />
             <button
               type="submit"
@@ -312,6 +320,8 @@ export const AuthPage: React.FC = () => {
               touched={registerForm.password.touched}
               required
               showPasswordToggle
+              showPassword={showPassword}
+              onTogglePassword={togglePassword}
             />
             <div className="grid grid-cols-2 gap-3">
               <InputField

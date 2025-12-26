@@ -70,11 +70,13 @@ export const BookingsPage: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
       confirmed: 'bg-green-100 text-green-800',
+      booked: 'bg-green-100 text-green-800',
       pending: 'bg-yellow-100 text-yellow-800',
       cancelled: 'bg-red-100 text-red-800',
     };
     const labels: Record<string, string> = {
       confirmed: 'Подтверждено',
+      booked: 'Подтверждено',
       pending: 'Ожидает',
       cancelled: 'Отменено',
     };
@@ -127,10 +129,10 @@ export const BookingsPage: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => navigate('/gyms')}
+            onClick={() => navigate('/new-booking')}
             className="brutal-button flex items-center gap-2"
           >
-            <MapPin size={18} />
+            <Calendar size={18} />
             Новая бронь
           </button>
         </div>
@@ -183,7 +185,7 @@ export const BookingsPage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <NoBookingsState onNavigate={() => navigate('/gyms')} />
+          <NoBookingsState onNavigate={() => navigate('/new-booking')} />
         )}
       </div>
 

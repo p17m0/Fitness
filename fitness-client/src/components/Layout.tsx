@@ -9,28 +9,28 @@ import {
   Home,
   Dumbbell,
   Wallet,
-  ShoppingBag,
   MapPin,
-  UserCheck
+  UserCheck,
+  CalendarPlus
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const navLinks = [
+  { to: '/new-booking', label: 'Бронь', icon: CalendarPlus, protected: true },
   { to: '/gyms', label: 'Залы', icon: MapPin, protected: true },
   { to: '/coaches', label: 'Тренеры', icon: UserCheck, protected: true },
-  { to: '/programs', label: 'Программы', icon: Dumbbell, protected: true },
   { to: '/subscriptions', label: 'Абонементы', icon: Wallet, protected: true },
-  { to: '/products', label: 'Продукты', icon: ShoppingBag, protected: true },
+  { to: '/programs', label: 'Программы', icon: Dumbbell, protected: true },
 ];
 
 const pageTitle: Record<string, string> = {
   '/': 'Главная',
   '/auth': 'Авторизация',
+  '/new-booking': 'Новое бронирование',
   '/gyms': 'Залы',
   '/coaches': 'Тренеры',
   '/programs': 'Программы',
   '/subscriptions': 'Абонементы',
-  '/products': 'Продукты',
   '/bookings': 'Мои бронирования',
 };
 
@@ -40,7 +40,8 @@ const NavLinkItem: React.FC<{
   icon: React.ElementType;
   onClick?: () => void;
   className?: string;
-}> = ({ to, label, icon: Icon, onClick, className = '' }) => {
+  compact?: boolean;
+}> = ({ to, label, icon: Icon, onClick, className = '', compact = false }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -49,14 +50,16 @@ const NavLinkItem: React.FC<{
       to={to}
       onClick={onClick}
       className={`
-        brutal-button flex items-center justify-center gap-2 transition-all duration-200
+        brutal-button flex items-center justify-center transition-all duration-200
+        ${compact ? 'gap-0 px-3' : 'gap-2'}
         ${isActive ? 'bg-gray-dark text-white translate-x-[2px] translate-y-[2px] shadow-[3px_3px_0_0_#1A1A1A]' : ''}
         ${className}
       `}
       aria-current={isActive ? 'page' : undefined}
+      title={compact ? label : undefined}
     >
       <Icon size={18} />
-      <span>{label}</span>
+      {!compact && <span>{label}</span>}
     </NavLink>
   );
 };
@@ -107,46 +110,65 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
               </div>
             </NavLink>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-3">
+            {/* Desktop Navigation - compact on lg, full on xl */}
+            <nav className="hidden md:flex items-center gap-1 lg:gap-2">
               {!isAuthenticated && (
-                <NavLinkItem to="/auth" label="Войти" icon={User} />
+                <>
+                  <NavLinkItem to="/auth" label="Войти" icon={User} compact className="xl:hidden" />
+                  <NavLinkItem to="/auth" label="Войти" icon={User} className="hidden xl:flex" />
+                </>
               )}
               {isAuthenticated && (
                 <>
-                  <NavLinkItem to="/bookings" label="Кабинет" icon={User} />
-                  {navLinks.filter(l => l.protected).map((link) => (
-                    <NavLinkItem
-                      key={link.to}
-                      to={link.to}
-                      label={link.label}
-                      icon={link.icon}
-                    />
-                  ))}
+                  {/* Compact icons on md-lg */}
+                  <div className="flex items-center gap-1 xl:hidden">
+                    <NavLinkItem to="/bookings" label="Кабинет" icon={User} compact />
+                    {navLinks.filter(l => l.protected).map((link) => (
+                      <NavLinkItem
+                        key={link.to}
+                        to={link.to}
+                        label={link.label}
+                        icon={link.icon}
+                        compact
+                      />
+                    ))}
+                  </div>
+                  {/* Full labels on xl+ */}
+                  <div className="hidden xl:flex items-center gap-2">
+                    <NavLinkItem to="/bookings" label="Кабинет" icon={User} />
+                    {navLinks.filter(l => l.protected).map((link) => (
+                      <NavLinkItem
+                        key={link.to}
+                        to={link.to}
+                        label={link.label}
+                        icon={link.icon}
+                      />
+                    ))}
+                  </div>
                 </>
               )}
               <a
                 href="tel:+70000000000"
-                className="brutal-button-secondary flex items-center gap-2"
+                className="brutal-button-secondary flex items-center justify-center px-3"
+                title="Контакты"
               >
                 <Phone size={18} />
-                <span className="hidden xl:inline">Контакты</span>
               </a>
               {isAuthenticated && (
                 <button
-                  className="brutal-button bg-gray-dark text-white flex items-center gap-2"
+                  className="brutal-button bg-gray-dark text-white flex items-center justify-center px-3"
                   onClick={handleLogout}
                   disabled={loading}
+                  title="Выход"
                 >
                   {loading ? <span className="loader" /> : <LogOut size={18} />}
-                  <span className="hidden xl:inline">Выход</span>
                 </button>
               )}
             </nav>
 
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-3 border-4 border-gray-dark bg-white brutal-shadow-sm"
+              className="md:hidden p-3 border-4 border-gray-dark bg-white brutal-shadow-sm"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
               aria-expanded={mobileMenuOpen}
@@ -160,7 +182,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden animate-fade-in"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden animate-fade-in"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
@@ -168,7 +190,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
       {/* Mobile Menu */}
       <div
         className={`
-          fixed top-0 right-0 h-full w-[85%] max-w-sm bg-cream z-50 lg:hidden
+          fixed top-0 right-0 h-full w-[85%] max-w-sm bg-cream z-50 md:hidden
           border-l-4 border-gray-dark transform transition-transform duration-300 ease-out
           ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}
         `}
@@ -298,7 +320,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
               <span className="font-display font-bold text-lg uppercase">HHSportFit</span>
             </div>
             <p className="text-sm font-body text-gray-400 text-center md:text-right">
-              © 2024 HHSportFit. Все права защищены.
+              © 2026 HHSportFit. Все права защищены.
             </p>
           </div>
         </div>

@@ -5,8 +5,8 @@ import { HomePage } from './pages/Home';
 import { AuthPage } from './pages/AuthPage';
 import { GymsPage } from './pages/GymsPage';
 import { SubscriptionsPage } from './pages/SubscriptionsPage';
-import { ProductsPage } from './pages/ProductsPage';
 import { BookingsPage } from './pages/BookingsPage';
+import { NewBookingPage } from './pages/NewBookingPage';
 import { ProgramsPage } from './pages/ProgramsPage';
 import { CoachesPage } from './pages/CoachesPage';
 
@@ -18,8 +18,8 @@ function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/gyms" element={<GymsPage />} />
         <Route path="/subscriptions" element={<SubscriptionsPage />} />
-        <Route path="/products" element={<ProductsPage />} />
         <Route path="/bookings" element={<BookingsPage />} />
+        <Route path="/new-booking" element={<NewBookingPage />} />
         <Route path="/programs" element={<ProgramsPage />} />
         <Route path="/coaches" element={<CoachesPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -21,6 +21,8 @@ gyms = [
   Gym.find_or_create_by!(name: attrs[:name], address: attrs[:address]) do |gym|
     gym.description = attrs[:description]
     gym.capacity = attrs[:capacity]
+    gym.opens_at = Time.zone.parse("08:00")
+    gym.closes_at = Time.zone.parse("22:00")
   end
 end
 
@@ -74,18 +76,13 @@ ClientSubscription.create(client: client, subscription_plan: plan, status: "acti
   cs.status = "active"
 end
 
-today = Time.current.change(min: 0, sec: 0)
-gym_slots = [
-  { gym: gyms.first, starts_at: today + 2.hours, ends_at: today + 3.hours },
-  { gym: gyms.first, starts_at: today + 4.hours, ends_at: today + 5.hours },
-  { gym: gyms.last, starts_at: today + 2.hours, ends_at: today + 3.hours }
-].map do |attrs|
-  GymSlot.find_or_create_by!(gym: attrs[:gym], starts_at: attrs[:starts_at], ends_at: attrs[:ends_at]) do |slot|
-    slot.status = "available"
-  end
+# Генерируем слоты залов на ближайшие дни
+gyms.each do |gym|
+  GymSlots::Generator.new(gym: gym, from: Date.current, to: Date.current + 7.days).call
 end
 
-CoachSlot.find_or_create_by!(coach: coach, starts_at: gym_slots.first.starts_at, ends_at: gym_slots.first.ends_at) do |slot|
-  slot.gym_slot = gym_slots.first
-  slot.status = "available"
-end
+# Генерируем слоты тренера только для первого зала (тренер не может быть в двух местах одновременно)
+CoachSlots::Generator.new(coach: coach, gym: gyms.first, from: Date.current, to: Date.current + 7.days).call
+
+puts "Создано #{GymSlot.count} слотов залов"
+puts "Создано #{CoachSlot.count} слотов тренеров"

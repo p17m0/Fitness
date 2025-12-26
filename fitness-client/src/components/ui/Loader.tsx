@@ -59,3 +59,5 @@ export const PageLoader: React.FC<{ text?: string }> = ({ text = 'Загрузк
   </div>
 );
 
+
+

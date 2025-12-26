@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_24_120416) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.integer "author_id"
     t.string "author_type"
@@ -53,7 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_120416) do
     t.integer "gym_slot_id", null: false
     t.string "status", default: "booked", null: false
     t.datetime "updated_at", null: false
-    t.index ["client_id", "gym_slot_id"], name: "index_bookings_on_client_id_and_gym_slot_id", unique: true
+    t.index ["client_id", "gym_slot_id"], name: "index_bookings_on_client_and_gym_slot_active_only", unique: true, where: "status != 'cancelled'"
     t.index ["client_id"], name: "index_bookings_on_client_id"
     t.index ["coach_slot_id"], name: "index_bookings_on_coach_slot_id"
     t.index ["gym_slot_id"], name: "index_bookings_on_gym_slot_id"
@@ -108,9 +108,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_120416) do
   create_table "gyms", force: :cascade do |t|
     t.string "address", default: "", null: false
     t.integer "capacity", default: 1, null: false
+    t.time "closes_at", default: "2000-01-01 22:00:00", null: false
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
+    t.time "opens_at", default: "2000-01-01 10:00:00", null: false
     t.datetime "updated_at", null: false
   end
 

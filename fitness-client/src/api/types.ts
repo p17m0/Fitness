@@ -12,12 +12,13 @@ export interface User {
 
 export interface Coach {
   id: number;
+  coach_id: number;
   email: string;
   first_name?: string;
   last_name?: string;
   phone_number?: string;
-  specialization?: string;
-  bio?: string;
+  specialization?: string | null;
+  bio?: string | null;
 }
 
 export interface Gym {
@@ -65,6 +66,14 @@ export interface Product {
   purchasable_id: number;
 }
 
+export interface CoachSlotCoach {
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  email: string;
+  specialization?: string | null;
+}
+
 export interface CoachSlot {
   id: number;
   coach_id: number;
@@ -72,6 +81,7 @@ export interface CoachSlot {
   starts_at: string;
   ends_at: string;
   status: SlotStatus;
+  coach?: CoachSlotCoach | null;
 }
 
 export interface ClientSubscription {

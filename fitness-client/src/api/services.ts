@@ -98,9 +98,14 @@ export class ProductsService {
 export class CoachSlotsService {
   constructor(private readonly client: ApiClient) {}
 
-  list(coachId?: number) {
-    const search = coachId ? `?coach_id=${coachId}` : '';
-    return this.client.request<CoachSlot[]>(`/api/v1/coach_slots${search}`);
+  list(params?: { coachId?: number; gymId?: number; gymSlotId?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.coachId) searchParams.set('coach_id', String(params.coachId));
+    if (params?.gymId) searchParams.set('gym_id', String(params.gymId));
+    if (params?.gymSlotId) searchParams.set('gym_slot_id', String(params.gymSlotId));
+
+    const search = searchParams.toString();
+    return this.client.request<CoachSlot[]>(`/api/v1/coach_slots${search ? `?${search}` : ''}`);
   }
 }
 
