@@ -16,6 +16,10 @@ class CoachSlot < ApplicationRecord
     available_status.where(starts_at: now..horizon_end)
   }
 
+  scope :available, -> { where(status: :available) }
+  scope :booked, -> { where(status: :booked) }
+  scope :cancelled, -> { where(status: :cancelled) }
+
   def book!
     with_lock do
       raise "Слот тренера недоступен" unless available_for_booking?(skip_booking_check: true)
@@ -43,5 +47,13 @@ class CoachSlot < ApplicationRecord
   def ends_after_starts
     return if starts_at.blank? || ends_at.blank?
     errors.add(:ends_at, "должен быть позже начала") if ends_at <= starts_at
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "coach_id", "gym_slot_id", "starts_at", "ends_at", "status", "created_at", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["coach", "gym_slot", "bookings"]
   end
 end

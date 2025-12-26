@@ -6,6 +6,14 @@ class Gym < ApplicationRecord
   validates :opens_at, :closes_at, presence: true
   validate :opens_before_closes
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "name", "address", "description", "capacity", "opens_at", "closes_at", "created_at", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["gym_slots"]
+  end
+
   private
 
   def opens_before_closes

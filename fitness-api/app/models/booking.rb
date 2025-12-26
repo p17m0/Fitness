@@ -19,6 +19,17 @@ class Booking < ApplicationRecord
   validate :client_has_active_subscription, on: :create
 
   scope :booked_only, -> { where(status: :booked) }
+  scope :cancelled_only, -> { where(status: :cancelled) }
+  scope :booked, -> { where(status: :booked) }
+  scope :cancelled, -> { where(status: :cancelled) }
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "client_id", "gym_slot_id", "coach_slot_id", "status", "created_at", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["client", "gym_slot", "coach_slot"]
+  end
 
   private
 

@@ -41,4 +41,12 @@ class User < ApplicationRecord
       self.roleable_id = Client.create.id
     end
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "email", "first_name", "last_name", "phone_number", "roleable_type", "roleable_id", "created_at", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["roleable", "allowlisted_jwts"]
+  end
 end

@@ -10,10 +10,20 @@ class ClientSubscription < ApplicationRecord
       .where("remaining_visits > 0")
       .where("expires_at IS NULL OR expires_at >= ?", Time.current)
   }
+  scope :active, -> { where(status: :active) }
+  scope :expired, -> { where(status: :expired) }
 
   validates :remaining_visits, numericality: { greater_than_or_equal_to: 0 }
 
   before_validation :apply_defaults, on: :create
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "client_id", "subscription_plan_id", "remaining_visits", "expires_at", "status", "created_at", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["client", "subscription_plan"]
+  end
 
   def consume_visit!
     raise "Нет доступных посещений" if remaining_visits <= 0

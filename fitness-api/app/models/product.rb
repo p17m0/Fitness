@@ -6,6 +6,14 @@ class Product < ApplicationRecord
 
   before_validation :mirror_from_purchasable, on: :create
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "name", "description", "price_cents", "currency", "purchasable_type", "purchasable_id", "created_at", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["purchasable"]
+  end
+
   private
 
   def mirror_from_purchasable

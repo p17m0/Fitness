@@ -18,6 +18,15 @@ class GymSlot < ApplicationRecord
     horizon_end = now + BOOKING_HORIZON_DAYS.days
     available_status.where(starts_at: now..horizon_end)
   }
+  scope :available, -> { where(status: :available) }
+  scope :booked, -> { where(status: :booked) }
+  scope :cancelled, -> { where(status: :cancelled) }
+  scope :upcoming, -> { where("starts_at >= ?", Time.current) }
+  scope :available_to_book, lambda {
+    now = Time.current
+    horizon_end = now + BOOKING_HORIZON_DAYS.days
+    available_status.where(starts_at: now..horizon_end)
+  }
 
   def book!
     with_lock do
@@ -89,5 +98,13 @@ class GymSlot < ApplicationRecord
 
   def within_same_day?
     starts_at.to_date == ends_at.to_date
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "gym_id", "starts_at", "ends_at", "status", "created_at", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["gym", "bookings", "coach_slots"]
   end
 end
