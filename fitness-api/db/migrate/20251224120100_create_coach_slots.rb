@@ -13,3 +13,4 @@ class CreateCoachSlots < ActiveRecord::Migration[8.1]
     add_index :coach_slots, [:coach_id, :starts_at, :ends_at], unique: true
   end
 end
+

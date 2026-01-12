@@ -11,25 +11,25 @@ class Api::V1::GymSlotsController < Api::BaseController
     render json: gym_slot
   end
 
-  def create
-    slot = GymSlot.find_or_initialize_by(gym_id: gym_slot_params[:gym_id], starts_at: gym_slot_params[:starts_at], ends_at: gym_slot_params[:ends_at])
-    slot.status ||= :available
+  # def create
+  #   slot = GymSlot.find_or_initialize_by(gym_id: gym_slot_params[:gym_id], starts_at: gym_slot_params[:starts_at], ends_at: gym_slot_params[:ends_at])
+  #   slot.status ||= :available
 
-    return render json: slot if slot.persisted? && slot.valid?
+  #   return render json: slot if slot.persisted? && slot.valid?
 
-    return render json: slot, status: :created if slot.save
-    render_error(slot.errors.full_messages)
-  end
+  #   return render json: slot, status: :created if slot.save
+  #   render_error(slot.errors.full_messages)
+  # end
 
-  def update
-    return render json: gym_slot if gym_slot.update(gym_slot_params)
-    render_error(gym_slot.errors.full_messages)
-  end
+  # def update
+  #   return render json: gym_slot if gym_slot.update(gym_slot_params)
+  #   render_error(gym_slot.errors.full_messages)
+  # end
 
-  def destroy
-    gym_slot.destroy!
-    head :no_content
-  end
+  # def destroy
+  #   gym_slot.destroy!
+  #   head :no_content
+  # end
 
   private
 

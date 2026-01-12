@@ -116,35 +116,22 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "products", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "currency", default: "RUB", null: false
-    t.text "description"
-    t.string "name", null: false
-    t.integer "price_cents", default: 0, null: false
-    t.integer "purchasable_id", null: false
-    t.string "purchasable_type", null: false
-    t.datetime "updated_at", null: false
-    t.index ["purchasable_type", "purchasable_id"], name: "index_products_on_purchasable"
-  end
-
   create_table "programs", force: :cascade do |t|
+    t.integer "coach_id"
     t.datetime "created_at", null: false
-    t.string "currency", default: "RUB", null: false
     t.text "description"
     t.integer "duration_minutes", default: 60, null: false
     t.string "name", null: false
-    t.integer "price_cents", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["coach_id"], name: "index_programs_on_coach_id"
   end
 
   create_table "subscription_plans", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "currency", default: "RUB", null: false
     t.text "description"
     t.integer "duration_days", default: 30, null: false
     t.string "name", null: false
-    t.integer "price_cents", default: 0, null: false
+    t.integer "price", default: 0, null: false
     t.datetime "updated_at", null: false
     t.integer "visits_count", default: 1, null: false
   end

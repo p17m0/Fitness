@@ -1,5 +1,5 @@
 import React from 'react';
-import { LucideIcon, Package, Calendar, Dumbbell, Wallet, ShoppingBag } from 'lucide-react';
+import { LucideIcon, Package, Calendar, Dumbbell, Wallet } from 'lucide-react';
 
 interface EmptyStateProps {
   icon?: LucideIcon;
@@ -58,14 +58,6 @@ export const NoSubscriptionsState: React.FC = () => (
     icon={Wallet}
     title="Нет активных абонементов"
     description="Выберите подходящий абонемент и начните тренироваться уже сегодня!"
-  />
-);
-
-export const NoProductsState: React.FC = () => (
-  <EmptyState
-    icon={ShoppingBag}
-    title="Продукты не найдены"
-    description="Каталог продуктов временно пуст. Скоро здесь появятся новые предложения!"
   />
 );
 

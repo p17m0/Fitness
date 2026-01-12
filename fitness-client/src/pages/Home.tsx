@@ -73,12 +73,18 @@ export const HomePage: React.FC = () => {
             style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}
           >
             {!isAuthenticated ? (
-              <NavLink to="/auth" className="brutal-button flex items-center gap-2">
-                Начать тренироваться
-                <ArrowRight size={18} />
-              </NavLink>
+              <>
+                <NavLink to="/auth" className="brutal-button flex items-center gap-2">
+                  Начать тренироваться
+                  <ArrowRight size={18} />
+                </NavLink>
+                <NavLink to="/gyms" className="brutal-button-secondary flex items-center gap-2">
+                  Посмотреть залы
+                  <ArrowRight size={18} />
+                </NavLink>
+              </>
             ) : (
-              <NavLink to="/gyms" className="brutal-button flex items-center gap-2">
+              <NavLink to="/new-booking" className="brutal-button flex items-center gap-2">
                 Забронировать зал
                 <ArrowRight size={18} />
               </NavLink>

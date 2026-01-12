@@ -38,6 +38,7 @@ class Api::V1::BookingsController < Api::BaseController
   def destroy
     return render_error("Только клиент", :forbidden) unless current_client
     booking = current_client.bookings.lock.find(params[:id])
+    # TODO отменять только за СУТКИ можно
     ActiveRecord::Base.transaction do
       booking.gym_slot.lock! if booking.gym_slot
       booking.coach_slot&.lock!

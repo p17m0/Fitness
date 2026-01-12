@@ -7,3 +7,4 @@ class ChangeBookingsUniqueIndex < ActiveRecord::Migration[8.1]
               name: "index_bookings_on_client_and_gym_slot_active_only"
   end
 end
+

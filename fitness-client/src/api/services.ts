@@ -9,7 +9,6 @@ import {
   Gym,
   GymSlot,
   LoginRequest,
-  Product,
   Program,
   RegisterRequest,
   ClientSubscription,
@@ -84,14 +83,6 @@ export class SubscriptionPlansService {
 
   list() {
     return this.client.request<SubscriptionPlan[]>('/api/v1/subscription_plans');
-  }
-}
-
-export class ProductsService {
-  constructor(private readonly client: ApiClient) {}
-
-  list() {
-    return this.client.request<Product[]>('/api/v1/products');
   }
 }
 

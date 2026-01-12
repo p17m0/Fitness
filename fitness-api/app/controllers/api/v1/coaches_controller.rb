@@ -21,8 +21,6 @@ class Api::V1::CoachesController < Api::BaseController
       first_name: user.first_name,
       last_name: user.last_name,
       phone_number: user.phone_number,
-      specialization: nil, # TODO: добавить в модель Coach если нужно
-      bio: nil # TODO: добавить в модель Coach если нужно
     }
   end
 end

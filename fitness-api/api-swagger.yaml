@@ -47,9 +47,9 @@ components:
         name: { type: string }
         description: { type: string, nullable: true }
         duration_minutes: { type: integer }
-        price_cents: { type: integer }
+        price: { type: integer }
         currency: { type: string }
-      required: [id, name, duration_minutes, price_cents, currency]
+      required: [id, name, duration_minutes, price, currency]
     SubscriptionPlan:
       type: object
       properties:
@@ -58,20 +58,9 @@ components:
         description: { type: string, nullable: true }
         visits_count: { type: integer }
         duration_days: { type: integer }
-        price_cents: { type: integer }
+        price: { type: integer }
         currency: { type: string }
-      required: [id, name, visits_count, duration_days, price_cents, currency]
-    Product:
-      type: object
-      properties:
-        id: { type: integer }
-        name: { type: string }
-        description: { type: string, nullable: true }
-        price_cents: { type: integer }
-        currency: { type: string }
-        purchasable_type: { type: string }
-        purchasable_id: { type: integer }
-      required: [id, name, price_cents, currency, purchasable_type, purchasable_id]
+      required: [id, name, visits_count, duration_days, price, currency]
     CoachSlot:
       type: object
       properties:
@@ -292,7 +281,7 @@ paths:
                 - id: 1
                   name: "Фитнес базовый"
                   duration_minutes: 60
-                  price_cents: 19900
+                  price: 19900
                   currency: RUB
     post:
       summary: Создать программу
@@ -306,7 +295,7 @@ paths:
                 name: "Силовая"
                 description: "3 раза в неделю"
                 duration_minutes: 90
-                price_cents: 29900
+                price: 29900
                 currency: RUB
       responses:
         "201": { description: Создано }
@@ -327,7 +316,7 @@ paths:
                   name: "10 посещений"
                   visits_count: 10
                   duration_days: 60
-                  price_cents: 49900
+                  price: 49900
                   currency: RUB
     post:
       summary: Создать абонемент
@@ -341,7 +330,7 @@ paths:
                 name: "5 посещений"
                 visits_count: 5
                 duration_days: 30
-                price_cents: 29900
+                price: 29900
                 currency: RUB
       responses:
         "201": { description: Создано }
@@ -349,41 +338,6 @@ paths:
     get: { summary: Получить абонемент, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
     patch: { summary: Обновить абонемент, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
     delete: { summary: Удалить абонемент, security: [{ bearerAuth: [] }], responses: { "204": { description: Удалено } } }
-  /api/v1/products:
-    get:
-      summary: Список продуктов (обёртка над program/subscription_plan)
-      security: [{ bearerAuth: [] }]
-      responses:
-        "200":
-          content:
-            application/json:
-              example:
-                - id: 1
-                  name: "10 посещений"
-                  price_cents: 49900
-                  currency: RUB
-                  purchasable_type: "SubscriptionPlan"
-                  purchasable_id: 1
-    post:
-      summary: Создать продукт
-      security: [{ bearerAuth: [] }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            example:
-              product:
-                name: "Персональная программа"
-                price_cents: 99900
-                currency: RUB
-                purchasable_type: "Program"
-                purchasable_id: 1
-      responses:
-        "201": { description: Создано }
-  /api/v1/products/{id}:
-    get: { summary: Получить продукт, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
-    patch: { summary: Обновить продукт, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
-    delete: { summary: Удалить продукт, security: [{ bearerAuth: [] }], responses: { "204": { description: Удалено } } }
   /api/v1/coach_slots:
     get:
       summary: Список слотов тренеров

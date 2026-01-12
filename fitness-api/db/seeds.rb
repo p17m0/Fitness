@@ -26,28 +26,13 @@ gyms = [
   end
 end
 
-programs = [
-  { name: "Фитнес базовый", description: "3 раза в неделю", duration_minutes: 60, price_cents: 19900, currency: "RUB" },
-  { name: "Силовая", description: "2 раза в неделю", duration_minutes: 90, price_cents: 29900, currency: "RUB" }
-].map do |attrs|
-  Program.find_or_create_by!(name: attrs[:name]) { |p| p.assign_attributes(attrs) }
-end
-
 subscription_plans = [
-  { name: "5 посещений", description: "На месяц", visits_count: 5, duration_days: 30, price_cents: 29900, currency: "RUB" },
-  { name: "10 посещений", description: "На два месяца", visits_count: 10, duration_days: 60, price_cents: 49900, currency: "RUB" }
+  { name: "5 посещений", description: "На месяц", visits_count: 5, duration_days: 30, price: 29900 },
+  { name: "10 посещений", description: "На два месяца", visits_count: 10, duration_days: 60, price: 49900 }
 ].map do |attrs|
   SubscriptionPlan.find_or_create_by!(name: attrs[:name]) { |sp| sp.assign_attributes(attrs) }
 end
 
-(programs + subscription_plans).each do |purchasable|
-  Product.find_or_create_by!(purchasable: purchasable) do |product|
-    product.name = purchasable.name
-    product.description = purchasable.try(:description)
-    product.price_cents = purchasable.price_cents
-    product.currency = purchasable.currency
-  end
-end
 
 client = Client.create
 client_user = User.find_or_create_by!(email: "client@example.com") do |user|
@@ -68,6 +53,14 @@ coach_user = User.find_or_create_by!(email: "coach@example.com") do |user|
   user.last_name = "Петров"
   user.roleable = coach
 end
+
+programs = [
+  { name: "Фитнес базовый", description: "3 раза в неделю", duration_minutes: 60, coach: coach },
+  { name: "Силовая", description: "2 раза в неделю", duration_minutes: 90, coach: coach }
+].map do |attrs|
+  Program.find_or_create_by!(name: attrs[:name]) { |p| p.assign_attributes(attrs) }
+end
+
 
 plan = subscription_plans.first
 ClientSubscription.create(client: client, subscription_plan: plan, status: "active") do |cs|

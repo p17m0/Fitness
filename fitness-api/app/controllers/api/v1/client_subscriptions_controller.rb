@@ -10,6 +10,7 @@ class Api::V1::ClientSubscriptionsController < Api::BaseController
   end
 
   def create
+    # ЗДесь должна быть логика платёжки
     return render_error("Только клиент", :forbidden) unless current_client
     plan = SubscriptionPlan.find(subscription_params[:subscription_plan_id])
     record = current_client.client_subscriptions.new(subscription_params.merge(subscription_plan: plan))

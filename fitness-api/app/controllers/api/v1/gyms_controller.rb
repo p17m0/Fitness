@@ -1,4 +1,6 @@
 class Api::V1::GymsController < Api::BaseController
+  skip_before_action :authenticate_user!
+
   def index
     render json: Gym.all
   end
@@ -6,22 +8,6 @@ class Api::V1::GymsController < Api::BaseController
   def show
     render json: gym
   end
-
-  # def create
-  #   gym = Gym.new(gym_params)
-  #   return render json: gym, status: :created if gym.save
-  #   render_error(gym.errors.full_messages)
-  # end
-
-  # def update
-  #   return render json: gym if gym.update(gym_params)
-  #   render_error(gym.errors.full_messages)
-  # end
-
-  # def destroy
-  #   gym.destroy!
-  #   head :no_content
-  # end
 
   private
 

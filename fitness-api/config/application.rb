@@ -25,7 +25,7 @@ module FitnessApi
     # config.eager_load_paths << Rails.root.join("extras")
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins ['http://localhost:5173', 'http://127.0.0.1:5173']
+        origins ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://155.212.180.90:5173']
         resource '/api/*',
           headers: :any,
           methods: :any,

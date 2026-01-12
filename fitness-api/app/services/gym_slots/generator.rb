@@ -44,3 +44,4 @@ class GymSlots::Generator
     slots
   end
 end
+

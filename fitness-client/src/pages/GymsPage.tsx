@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { MapPin, Users, Clock, Phone } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { MapPin, Users, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/Toast';
 import { Gym } from '../api/types';
 import { ListSkeleton } from '../components/ui/Skeleton';
-import { AuthRequiredState, EmptyState } from '../components/ui/EmptyState';
+import { EmptyState } from '../components/ui/EmptyState';
 
 export const GymsPage: React.FC = () => {
   const { isAuthenticated, services } = useAuth();
@@ -14,13 +14,7 @@ export const GymsPage: React.FC = () => {
   const [gyms, setGyms] = useState<Gym[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const ready = useMemo(() => isAuthenticated, [isAuthenticated]);
-
   useEffect(() => {
-    if (!ready) {
-      setLoading(false);
-      return;
-    }
     let aborted = false;
     setLoading(true);
 
@@ -39,17 +33,7 @@ export const GymsPage: React.FC = () => {
 
     return () => { aborted = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, services]);
-
-  if (!ready) {
-    return (
-      <div className="container mx-auto">
-        <div className="brutal-card">
-          <AuthRequiredState onNavigate={() => navigate('/auth')} />
-        </div>
-      </div>
-    );
-  }
+  }, [services]);
 
   return (
     <div className="container mx-auto space-y-6">
@@ -63,17 +47,20 @@ export const GymsPage: React.FC = () => {
             <div>
               <h2 className="brutal-title text-2xl md:text-3xl mb-0">Наши залы</h2>
               <p className="text-sm font-body text-gray-medium">
-                {gyms.length} {gyms.length === 1 ? 'зал' : gyms.length < 5 ? 'зала' : 'залов'}
+                {gyms.length > 0 && `${gyms.length} ${gyms.length === 1 ? 'зал' : gyms.length < 5 ? 'зала' : 'залов'}`}
+                {!isAuthenticated && gyms.length > 0 && ' — Войдите, чтобы забронировать слот'}
               </p>
             </div>
           </div>
-          <button
-            onClick={() => navigate('/new-booking')}
-            className="brutal-button flex items-center gap-2"
-          >
-            <Clock size={18} />
-            Забронировать
-          </button>
+          {isAuthenticated && (
+            <button
+              onClick={() => navigate('/new-booking')}
+              className="brutal-button flex items-center gap-2"
+            >
+              <Clock size={18} />
+              Забронировать
+            </button>
+          )}
         </div>
 
         {loading ? (
@@ -115,12 +102,21 @@ export const GymsPage: React.FC = () => {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => navigate(`/new-booking?gym=${gym.id}`)}
-                  className="brutal-button w-full mt-4 text-sm"
-                >
-                  Забронировать слот
-                </button>
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => navigate(`/new-booking?gym=${gym.id}`)}
+                    className="brutal-button w-full mt-4 text-sm"
+                  >
+                    Забронировать слот
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate('/auth')}
+                    className="brutal-button-secondary w-full mt-4 text-sm"
+                  >
+                    Войти для бронирования
+                  </button>
+                )}
               </div>
             ))}
           </div>

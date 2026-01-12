@@ -17,7 +17,6 @@ Rails.application.routes.draw do
       resources :gym_slots
       resources :programs
       resources :subscription_plans
-      resources :products
       resources :coach_slots
       resources :client_subscriptions, only: [:index, :show, :create]
       resources :bookings, only: [:index, :create, :destroy]

@@ -17,7 +17,6 @@ import { useAuth } from '../contexts/AuthContext';
 
 const navLinks = [
   { to: '/new-booking', label: 'Бронь', icon: CalendarPlus, protected: true },
-  { to: '/gyms', label: 'Залы', icon: MapPin, protected: true },
   { to: '/coaches', label: 'Тренеры', icon: UserCheck, protected: true },
   { to: '/subscriptions', label: 'Абонементы', icon: Wallet, protected: true },
   { to: '/programs', label: 'Программы', icon: Dumbbell, protected: true },

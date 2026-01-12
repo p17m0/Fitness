@@ -4,3 +4,4 @@ class AddWorkingHoursToGyms < ActiveRecord::Migration[8.1]
     add_column :gyms, :closes_at, :time, null: false, default: "22:00"
   end
 end
+

@@ -59,17 +59,6 @@ components:
         price_cents: { type: integer }
         currency: { type: string }
       required: [id, name, visits_count, duration_days, price_cents, currency]
-    Product:
-      type: object
-      properties:
-        id: { type: integer }
-        name: { type: string }
-        description: { type: string, nullable: true }
-        price_cents: { type: integer }
-        currency: { type: string }
-        purchasable_type: { type: string }
-        purchasable_id: { type: integer }
-      required: [id, name, price_cents, currency, purchasable_type, purchasable_id]
     CoachSlot:
       type: object
       properties:
@@ -345,41 +334,6 @@ paths:
     get: { summary: Получить абонемент, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
     patch: { summary: Обновить абонемент, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
     delete: { summary: Удалить абонемент, security: [{ bearerAuth: [] }], responses: { "204": { description: Удалено } } }
-  /api/v1/products:
-    get:
-      summary: Список продуктов (обёртка над program/subscription_plan)
-      security: [{ bearerAuth: [] }]
-      responses:
-        "200":
-          content:
-            application/json:
-              example:
-                - id: 1
-                  name: "10 посещений"
-                  price_cents: 49900
-                  currency: RUB
-                  purchasable_type: "SubscriptionPlan"
-                  purchasable_id: 1
-    post:
-      summary: Создать продукт
-      security: [{ bearerAuth: [] }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            example:
-              product:
-                name: "Персональная программа"
-                price_cents: 99900
-                currency: RUB
-                purchasable_type: "Program"
-                purchasable_id: 1
-      responses:
-        "201": { description: Создано }
-  /api/v1/products/{id}:
-    get: { summary: Получить продукт, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
-    patch: { summary: Обновить продукт, security: [{ bearerAuth: [] }], responses: { "200": { description: OK } } }
-    delete: { summary: Удалить продукт, security: [{ bearerAuth: [] }], responses: { "204": { description: Удалено } } }
   /api/v1/coach_slots:
     get:
       summary: Список слотов тренеров

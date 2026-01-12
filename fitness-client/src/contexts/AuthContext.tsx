@@ -7,7 +7,6 @@ import {
   CoachSlotsService,
   GymSlotsService,
   GymsService,
-  ProductsService,
   ProgramsService,
   SubscriptionPlansService,
   AuthService
@@ -25,7 +24,6 @@ interface AuthContextValue {
     gyms: GymsService;
     gymSlots: GymSlotsService;
     programs: ProgramsService;
-    products: ProductsService;
     subscriptionPlans: SubscriptionPlansService;
     coaches: CoachesService;
     coachSlots: CoachSlotsService;
@@ -84,7 +82,6 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       gyms: new GymsService(apiClientRef.current!),
       gymSlots: new GymSlotsService(apiClientRef.current!),
       programs: new ProgramsService(apiClientRef.current!),
-      products: new ProductsService(apiClientRef.current!),
       subscriptionPlans: new SubscriptionPlansService(apiClientRef.current!),
       coaches: new CoachesService(apiClientRef.current!),
       coachSlots: new CoachSlotsService(apiClientRef.current!),

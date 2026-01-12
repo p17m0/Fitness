@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Program do
-  menu priority: 9, label: "Программы"
+  menu priority: 9, label: "Программы тренировок"
 
-  permit_params :name, :description, :duration_minutes, :price_cents, :currency
+  permit_params :name, :description, :duration_minutes
 
   filter :name
   filter :duration_minutes
-  filter :price_cents
-  filter :currency
+  filter :coach
   filter :created_at
 
   index do
@@ -19,16 +18,7 @@ ActiveAdmin.register Program do
     column :duration_minutes do |program|
       "#{program.duration_minutes} мин"
     end
-    column :price do |program|
-      "#{program.price_cents / 100.0} #{program.currency}"
-    end
-    column :product do |program|
-      if program.product
-        link_to "Продукт ##{program.product.id}", admin_product_path(program.product)
-      else
-        "Нет"
-      end
-    end
+    column :coach
     column :created_at
     actions
   end
@@ -41,30 +31,18 @@ ActiveAdmin.register Program do
       row :duration_minutes do |program|
         "#{program.duration_minutes} минут"
       end
-      row :price_cents
-      row :price do |program|
-        "#{program.price_cents / 100.0} #{program.currency}"
-      end
-      row :currency
-      row :product do |program|
-        if program.product
-          link_to "Продукт ##{program.product.id}", admin_product_path(program.product)
-        else
-          "Нет"
-        end
-      end
+      row :coach
       row :created_at
       row :updated_at
     end
   end
 
   form do |f|
-    f.inputs "Программа" do
+    f.inputs "Программа тренировки" do
       f.input :name
       f.input :description, as: :text
       f.input :duration_minutes
-      f.input :price_cents
-      f.input :currency, as: :select, collection: ["RUB", "USD", "EUR"], default: "RUB"
+      f.input :coach
     end
     f.actions
   end

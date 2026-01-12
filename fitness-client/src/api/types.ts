@@ -56,16 +56,6 @@ export interface SubscriptionPlan {
   currency: string;
 }
 
-export interface Product {
-  id: number;
-  name: string;
-  description?: string | null;
-  price_cents: number;
-  currency: string;
-  purchasable_type: string;
-  purchasable_id: number;
-}
-
 export interface CoachSlotCoach {
   id: number;
   first_name?: string;

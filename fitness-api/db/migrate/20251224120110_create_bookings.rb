@@ -12,3 +12,4 @@ class CreateBookings < ActiveRecord::Migration[8.1]
     add_index :bookings, [:client_id, :gym_slot_id], unique: true
   end
 end
+
