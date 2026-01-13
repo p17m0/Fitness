@@ -9,6 +9,6 @@ class Api::BaseController < ActionController::API
   end
 
   def render_error(message, status = :unprocessable_entity)
-    render json: { status: "error", errors: Array(message) }, status: status
+    render json: { status: "error", message: message }, status: status
   end
 end

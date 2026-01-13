@@ -1,32 +1,22 @@
 class Api::V1::CoachSlotsController < Api::BaseController
   def index
-    scope = CoachSlot.available_to_book.includes(coach: :user, gym_slot: :gym)
+    scope = CoachSlot.available_to_book.includes(coach: :user)
     scope = scope.where(coach_id: params[:coach_id]) if params[:coach_id]
-    scope = scope.where(gym_slot_id: params[:gym_slot_id]) if params[:gym_slot_id]
-    if params[:gym_id]
-      scope = scope.joins(:gym_slot).where(gym_slots: { gym_id: params[:gym_id] })
+
+    if params[:starts_at].present?
+      begin
+        starts_at = Time.zone.parse(params[:starts_at])
+        scope = scope.where(starts_at: starts_at)
+      rescue ArgumentError
+        return render_error("Некорректный формат starts_at", :bad_request)
+      end
     end
+
     render json: scope.map { |slot| serialize_coach_slot(slot) }
   end
 
   def show
     render json: coach_slot
-  end
-
-  def create
-    record = CoachSlot.new(coach_slot_params)
-    return render json: record, status: :created if record.save
-    render_error(record.errors.full_messages)
-  end
-
-  def update
-    return render json: coach_slot if coach_slot.update(coach_slot_params)
-    render_error(coach_slot.errors.full_messages)
-  end
-
-  def destroy
-    coach_slot.destroy!
-    head :no_content
   end
 
   private
@@ -36,7 +26,7 @@ class Api::V1::CoachSlotsController < Api::BaseController
   end
 
   def coach_slot_params
-    params.require(:coach_slot).permit(:coach_id, :gym_slot_id, :starts_at, :ends_at, :status)
+    params.require(:coach_slot).permit(:coach_id, :starts_at, :ends_at, :status)
   end
 
   def serialize_coach_slot(slot)
@@ -44,7 +34,6 @@ class Api::V1::CoachSlotsController < Api::BaseController
     {
       id: slot.id,
       coach_id: slot.coach_id,
-      gym_slot_id: slot.gym_slot_id,
       starts_at: slot.starts_at,
       ends_at: slot.ends_at,
       status: slot.status,

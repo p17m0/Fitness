@@ -1,9 +1,6 @@
 class GymSlot < ApplicationRecord
-  BOOKING_HORIZON_DAYS = 30
-
   belongs_to :gym
   has_many :bookings, dependent: :destroy
-  has_many :coach_slots
 
   enum :status, { available: "available", booked: "booked", cancelled: "cancelled" }, suffix: true
 
@@ -105,6 +102,6 @@ class GymSlot < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["gym", "bookings", "coach_slots"]
+    ["gym", "bookings"]
   end
 end

@@ -1,18 +1,15 @@
 class CoachSlot < ApplicationRecord
   belongs_to :coach
-  belongs_to :gym_slot
   has_many :bookings
 
   enum :status, { available: "available", booked: "booked", cancelled: "cancelled" }, suffix: true
 
   validates :starts_at, :ends_at, presence: true
-  validates :gym_slot, presence: true
   validate :ends_after_starts
 
   scope :available_to_book, lambda {
     now = Time.current
-    horizon_end = now + GymSlot::BOOKING_HORIZON_DAYS.days
-
+    horizon_end = now + BOOKING_HORIZON_DAYS.days
     available_status.where(starts_at: now..horizon_end)
   }
 
@@ -36,9 +33,8 @@ class CoachSlot < ApplicationRecord
   def available_for_booking?(at: Time.current, skip_booking_check: false)
     return false unless available_status?
     return false if starts_at < at
-    return false if starts_at.to_date > (at + GymSlot::BOOKING_HORIZON_DAYS.days).to_date
+    return false if starts_at.to_date > (at + BOOKING_HORIZON_DAYS.days).to_date
     return false if !skip_booking_check && bookings.booked_only.exists?
-
     true
   end
 
@@ -50,10 +46,10 @@ class CoachSlot < ApplicationRecord
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    ["id", "coach_id", "gym_slot_id", "starts_at", "ends_at", "status", "created_at", "updated_at"]
+    ["id", "coach_id", "starts_at", "ends_at", "status", "created_at", "updated_at"]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["coach", "gym_slot", "bookings"]
+    ["coach", "bookings"]
   end
 end

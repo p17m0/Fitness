@@ -13,4 +13,9 @@ class Client < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     ["user", "bookings", "gym_slots", "coach_slots", "client_subscriptions", "subscription_plans"]
   end
+
+  def booked_gym_slots
+    gym_slot_ids = bookings.pluck(:gym_slot_id)
+    GymSlot.where(id: gym_slot_ids)
+  end
 end

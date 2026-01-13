@@ -341,11 +341,16 @@ paths:
   /api/v1/coach_slots:
     get:
       summary: Список слотов тренеров
+      description: Параметр gym_slot_id при бронировании не используется; чтобы отфильтровать под выбранный слот зала, передайте starts_at в query.
       security: [{ bearerAuth: [] }]
       parameters:
         - in: query
           name: coach_id
           schema: { type: integer }
+        - in: query
+          name: starts_at
+          required: false
+          schema: { type: string, format: date-time }
       responses:
         "200":
           content:
@@ -452,6 +457,32 @@ paths:
                 status: booked
         "422":
           description: Ошибка (нет посещений или слот недоступен)
+  /api/v1/bookings/{booking_id}/create_coach_booking:
+    post:
+      summary: Добавить тренера к существующему бронированию
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: booking_id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                booking:
+                  type: object
+                  properties:
+                    coach_slot_id: { type: integer }
+                  required: [coach_slot_id]
+            example:
+              booking:
+                coach_slot_id: 42
+      responses:
+        "201": { description: Создано }
   /api/v1/bookings/{id}:
     delete:
       summary: Отменить бронирование

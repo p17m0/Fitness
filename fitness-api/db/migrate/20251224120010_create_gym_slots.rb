@@ -8,8 +8,5 @@ class CreateGymSlots < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-
-    add_index :gym_slots, [:gym_id, :starts_at, :ends_at], unique: true
   end
 end
-

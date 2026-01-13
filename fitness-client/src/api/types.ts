@@ -84,9 +84,8 @@ export interface ClientSubscription {
 
 export interface Booking {
   id: number;
-  gym_slot_id: number;
-  coach_slot_id?: number | null;
-  status: BookingStatus;
+  coach_name?: string | null;
+  starts_at: string;
 }
 
 export interface AuthSuccessResponse {
@@ -125,6 +124,12 @@ export interface CreateBookingRequest {
   booking: {
     gym_slot_id: number;
     coach_slot_id?: number;
+  };
+}
+
+export interface CreateCoachBookingRequest {
+  booking: {
+    coach_slot_id: number;
   };
 }
 

@@ -220,6 +220,7 @@ paths:
   /api/v1/gym_slots:
     get:
       summary: Список слотов залов
+      description: Может быть несколько слотов на одно и то же время — это отдельные места по capacity зала.
       security: [{ bearerAuth: [] }]
       parameters:
         - in: query
@@ -231,6 +232,11 @@ paths:
             application/json:
               example:
                 - id: 10
+                  gym_id: 1
+                  starts_at: "2025-12-25T10:00:00Z"
+                  ends_at: "2025-12-25T11:00:00Z"
+                  status: available
+                - id: 11
                   gym_id: 1
                   starts_at: "2025-12-25T10:00:00Z"
                   ends_at: "2025-12-25T11:00:00Z"
@@ -337,11 +343,16 @@ paths:
   /api/v1/coach_slots:
     get:
       summary: Список слотов тренеров
+      description: Параметр gym_slot_id при бронировании не используется; чтобы отфильтровать под выбранный слот зала, передайте starts_at в query.
       security: [{ bearerAuth: [] }]
       parameters:
         - in: query
           name: coach_id
           schema: { type: integer }
+        - in: query
+          name: starts_at
+          required: false
+          schema: { type: string, format: date-time }
       responses:
         "200":
           content:
@@ -414,9 +425,8 @@ paths:
             application/json:
               example:
                 - id: 11
-                  gym_slot_id: 10
-                  coach_slot_id: 5
-                  status: booked
+                  coach_name: "Иван Иванов"
+                  starts_at: "2025-12-25T10:00:00Z"
     post:
       summary: Забронировать зал (и тренера опционально)
       security: [{ bearerAuth: [] }]
@@ -441,11 +451,36 @@ paths:
             application/json:
               example:
                 id: 11
-                gym_slot_id: 10
-                coach_slot_id: 5
-                status: booked
+                coach_name: "Иван Иванов"
+                starts_at: "2025-12-25T10:00:00Z"
         "422":
           description: Ошибка (нет посещений или слот недоступен)
+  /api/v1/bookings/{booking_id}/create_coach_booking:
+    post:
+      summary: Добавить тренера к существующему бронированию
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: booking_id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                booking:
+                  type: object
+                  properties:
+                    coach_slot_id: { type: integer }
+                  required: [coach_slot_id]
+            example:
+              booking:
+                coach_slot_id: 42
+      responses:
+        "201": { description: Создано }
   /api/v1/bookings/{id}:
     delete:
       summary: Отменить бронирование

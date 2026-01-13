@@ -5,6 +5,7 @@ import {
   Coach,
   CreateBookingRequest,
   CreateClientSubscriptionRequest,
+  CreateCoachBookingRequest,
   CreateGymSlotRequest,
   Gym,
   GymSlot,
@@ -89,11 +90,11 @@ export class SubscriptionPlansService {
 export class CoachSlotsService {
   constructor(private readonly client: ApiClient) {}
 
-  list(params?: { coachId?: number; gymId?: number; gymSlotId?: number }) {
+  list(params?: { coachId?: number; gymId?: number; startsAt?: string }) {
     const searchParams = new URLSearchParams();
     if (params?.coachId) searchParams.set('coach_id', String(params.coachId));
     if (params?.gymId) searchParams.set('gym_id', String(params.gymId));
-    if (params?.gymSlotId) searchParams.set('gym_slot_id', String(params.gymSlotId));
+    if (params?.startsAt) searchParams.set('starts_at', params.startsAt);
 
     const search = searchParams.toString();
     return this.client.request<CoachSlot[]>(`/api/v1/coach_slots${search ? `?${search}` : ''}`);
@@ -124,6 +125,13 @@ export class BookingsService {
 
   create(payload: CreateBookingRequest) {
     return this.client.request<Booking>('/api/v1/bookings', {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  createCoachBooking(bookingId: number, payload: CreateCoachBookingRequest) {
+    return this.client.request<Booking>(`/api/v1/bookings/${bookingId}/create_coach_booking`, {
       method: 'POST',
       body: payload
     });

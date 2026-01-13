@@ -19,7 +19,9 @@ Rails.application.routes.draw do
       resources :subscription_plans
       resources :coach_slots
       resources :client_subscriptions, only: [:index, :show, :create]
-      resources :bookings, only: [:index, :create, :destroy]
+      resources :bookings, only: [:index, :create, :destroy] do
+        post :create_coach_booking
+      end
       resources :coaches, only: [:index]
     end
   end

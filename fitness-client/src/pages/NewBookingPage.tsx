@@ -6,6 +6,7 @@ import { useToast } from '../components/ui/Toast';
 import { Gym, GymSlot, CoachSlot, ClientSubscription } from '../api/types';
 import { AuthRequiredState } from '../components/ui/EmptyState';
 import { PageLoader } from '../components/ui/Loader';
+import { HttpError } from '../api/ApiClient';
 
 // Форматирование даты
 const formatDate = (date: Date): string => {
@@ -66,6 +67,11 @@ export const NewBookingPage: React.FC = () => {
   const days = useMemo(() => generateDays(14), []);
   const ready = useMemo(() => isAuthenticated, [isAuthenticated]);
 
+  const selectedSlot = useMemo(
+    () => gymSlots.find((s) => s.id === selectedSlotId) || null,
+    [gymSlots, selectedSlotId]
+  );
+
   const hasActiveSubscription = useMemo(
     () =>
       subscriptions.some(
@@ -79,11 +85,30 @@ export const NewBookingPage: React.FC = () => {
 
   // Фильтрация слотов по выбранной дате
   const slotsForSelectedDate = useMemo(() => {
-    return gymSlots.filter((slot) => {
-      const slotDate = new Date(slot.starts_at);
-      return isSameDay(slotDate, selectedDate) && slot.status === 'available';
-    }).sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
+    return gymSlots
+      .filter((slot) => {
+        const slotDate = new Date(slot.starts_at);
+        return isSameDay(slotDate, selectedDate) && slot.status === 'available';
+      })
+      .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
   }, [gymSlots, selectedDate]);
+
+  // Группировка одинаковых слотов по времени (capacity)
+  const groupedSlots = useMemo(() => {
+    const map = new Map<string, { slot: GymSlot; count: number }>();
+    slotsForSelectedDate.forEach((slot) => {
+      const key = `${slot.starts_at}-${slot.ends_at}`;
+      const existing = map.get(key);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        map.set(key, { slot, count: 1 });
+      }
+    });
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(a.slot.starts_at).getTime() - new Date(b.slot.starts_at).getTime()
+    );
+  }, [slotsForSelectedDate]);
 
   // Загрузка залов и подписок
   useEffect(() => {
@@ -139,15 +164,17 @@ export const NewBookingPage: React.FC = () => {
 
   // Загрузка слотов тренеров
   useEffect(() => {
-    if (!ready || !selectedSlotId || !hasActiveSubscription) {
+    if (!ready || !selectedSlot || !hasActiveSubscription) {
       setCoachSlots([]);
       return;
     }
     let aborted = false;
     setLoadingCoaches(true);
 
+    const startsAt = selectedSlot.starts_at;
+
     services.coachSlots
-      .list({ gymSlotId: selectedSlotId })
+      .list({ startsAt })
       .then((data) => {
         if (!aborted) setCoachSlots(data);
       })
@@ -157,7 +184,7 @@ export const NewBookingPage: React.FC = () => {
       });
 
     return () => { aborted = true; };
-  }, [ready, selectedSlotId, services, hasActiveSubscription]);
+  }, [ready, selectedSlot, services, hasActiveSubscription]);
 
   const handleGymSelect = useCallback((gymId: number) => {
     setSelectedGymId(gymId);
@@ -186,14 +213,17 @@ export const NewBookingPage: React.FC = () => {
       toast.success('Бронирование создано!');
       navigate('/bookings');
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Ошибка бронирования');
+      if (err instanceof HttpError && err.status >= 400 && err.status < 500) {
+        toast.error(err.message || 'Ошибка бронирования');
+      } else {
+        toast.error('Ошибка бронирования');
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
   const selectedGym = gyms.find((g) => g.id === selectedGymId);
-  const selectedSlot = gymSlots.find((s) => s.id === selectedSlotId);
 
   if (!ready) {
     return (
@@ -340,20 +370,23 @@ export const NewBookingPage: React.FC = () => {
                     <div key={i} className="h-12 bg-gray-200 animate-pulse border-3 border-gray-200" />
                   ))}
                 </div>
-              ) : slotsForSelectedDate.length > 0 ? (
+              ) : groupedSlots.length > 0 ? (
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                  {slotsForSelectedDate.map((slot) => {
+                  {groupedSlots.map(({ slot, count }) => {
                     const isSelected = selectedSlotId === slot.id;
                     return (
                       <button
-                        key={slot.id}
+                        key={`${slot.starts_at}-${slot.ends_at}`}
                         onClick={() => handleSlotSelect(slot.id)}
-                        className={`h-12 flex items-center justify-center font-display font-bold border-3 transition-all
+                        className={`h-12 flex flex-col items-center justify-center font-display font-bold border-3 transition-all text-center leading-tight
                           ${isSelected
                             ? 'bg-orange-primary text-white border-gray-dark brutal-shadow-sm'
                             : 'bg-white border-gray-200 hover:border-orange-primary'}`}
                       >
-                        {formatTime(slot.starts_at)}
+                        <span>{formatTime(slot.starts_at)}</span>
+                        <span className={`text-xs font-body ${isSelected ? 'text-white/80' : 'text-gray-medium'}`}>
+                          мест: {count}
+                        </span>
                       </button>
                     );
                   })}

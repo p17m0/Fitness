@@ -1,6 +1,6 @@
 module CoachSlots
   class Generator
-    def initialize(coach:, gym:, from: Date.current, to: Date.current + GymSlot::BOOKING_HORIZON_DAYS.days)
+    def initialize(coach:, gym:, from: Date.current, to: Date.current + BOOKING_HORIZON_DAYS.days)
       @coach = coach
       @gym = gym
       @from = from
@@ -23,7 +23,6 @@ module CoachSlots
           ends_at: gym_slot.ends_at
         )
         # Обновляем gym_slot для новых и существующих записей
-        slot.gym_slot = gym_slot
         slot.status = :available if slot.new_record?
         slot.save!
         slots << slot

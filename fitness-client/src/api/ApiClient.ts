@@ -1,5 +1,14 @@
 type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
+export class HttpError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 interface RequestOptions {
   method?: HttpMethod;
   body?: unknown;
@@ -34,7 +43,7 @@ export class ApiClient {
 
     if (!response.ok) {
       const message = await this.safeReadError(response);
-      throw new Error(message || `HTTP ${response.status}`);
+      throw new HttpError(message || `HTTP ${response.status}`, response.status);
     }
 
     if (response.status === 204) {

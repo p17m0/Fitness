@@ -80,13 +80,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
     t.integer "coach_id", null: false
     t.datetime "created_at", null: false
     t.datetime "ends_at", null: false
-    t.integer "gym_slot_id"
     t.datetime "starts_at", null: false
     t.string "status", default: "available", null: false
     t.datetime "updated_at", null: false
     t.index ["coach_id", "starts_at", "ends_at"], name: "index_coach_slots_on_coach_id_and_starts_at_and_ends_at", unique: true
     t.index ["coach_id"], name: "index_coach_slots_on_coach_id"
-    t.index ["gym_slot_id"], name: "index_coach_slots_on_gym_slot_id"
   end
 
   create_table "coaches", force: :cascade do |t|
@@ -101,7 +99,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
     t.datetime "starts_at", null: false
     t.string "status", default: "available", null: false
     t.datetime "updated_at", null: false
-    t.index ["gym_id", "starts_at", "ends_at"], name: "index_gym_slots_on_gym_id_and_starts_at_and_ends_at", unique: true
     t.index ["gym_id"], name: "index_gym_slots_on_gym_id"
   end
 
@@ -164,6 +161,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
   add_foreign_key "client_subscriptions", "clients"
   add_foreign_key "client_subscriptions", "subscription_plans"
   add_foreign_key "coach_slots", "coaches"
-  add_foreign_key "coach_slots", "gym_slots"
   add_foreign_key "gym_slots", "gyms"
 end
