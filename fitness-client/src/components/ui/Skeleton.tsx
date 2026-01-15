@@ -77,7 +77,7 @@ export const ListSkeleton: React.FC<{ count?: number; className?: string }> = ({
     {Array.from({ length: count }).map((_, i) => (
       <div
         key={i}
-        className="bg-white border-4 border-gray-200 p-4 brutal-shadow-sm space-y-2"
+        className="bg-gray-light border-4 border-gray-200 p-4 brutal-shadow-sm space-y-2"
         style={{ animationDelay: `${i * 0.1}s` }}
       >
         <div className="flex justify-between items-center">
@@ -91,7 +91,7 @@ export const ListSkeleton: React.FC<{ count?: number; className?: string }> = ({
 );
 
 export const SlotSkeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`p-3 border-4 border-gray-200 bg-white brutal-shadow-sm ${className}`}>
+  <div className={`p-3 border-4 border-gray-200 bg-gray-light brutal-shadow-sm ${className}`}>
     <div className="flex items-center gap-2 mb-2">
       <Skeleton variant="circular" width={18} height={18} />
       <Skeleton variant="text" width="60%" height={16} />

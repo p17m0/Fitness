@@ -111,7 +111,7 @@ export const SubscriptionsPage: React.FC = () => {
                   opacity-0 animate-fade-in-up
                   ${selectedPlanId === plan.id
                     ? 'bg-orange-primary text-white brutal-shadow-lg scale-[1.02]'
-                    : 'bg-white hover:bg-gray-light brutal-shadow'}
+                    : 'bg-gray-light hover:bg-cream brutal-shadow'}
                 `}
                 style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'forwards' }}
               >
@@ -195,7 +195,7 @@ export const SubscriptionsPage: React.FC = () => {
             {clientSubscriptions.map((sub, index) => (
               <div
                 key={sub.id}
-                className="bg-white border-4 border-gray-dark p-4 brutal-shadow-sm opacity-0 animate-fade-in-up"
+                className="bg-gray-light border-4 border-gray-dark p-4 brutal-shadow-sm opacity-0 animate-fade-in-up"
                 style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'forwards' }}
               >
                 <div className="flex items-center justify-between mb-3">

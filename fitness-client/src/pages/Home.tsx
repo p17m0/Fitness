@@ -47,7 +47,7 @@ export const HomePage: React.FC = () => {
             <div className="w-24 h-24 md:w-32 md:h-32 brutal-shadow-lg flex items-center justify-center bg-orange-primary transform hover:scale-105 transition-transform">
               <img
                 src="/logo.jpg"
-                alt="HHSportFit Logo"
+                alt="Умный фитнес Logo"
                 className="w-16 h-16 md:w-24 md:h-24 object-contain"
               />
             </div>
@@ -57,7 +57,7 @@ export const HomePage: React.FC = () => {
             className="brutal-title-accent text-4xl sm:text-5xl md:text-6xl mb-6 opacity-0 animate-fade-in-up"
             style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
           >
-            HHSportFit
+            Умный фитнес
           </h2>
 
           <p
@@ -127,7 +127,7 @@ export const HomePage: React.FC = () => {
           <h3 className="brutal-title text-2xl md:text-3xl">О нас</h3>
           <div className="space-y-4">
             <p className="brutal-text">
-              HHSportFit — место, где слабые становятся сильными. Мы даём жёсткое оборудование,
+              Умный фитнес — место, где слабые становятся сильными. Мы даём жёсткое оборудование,
               требовательных тренеров и атмосферу без оправданий.
             </p>
             <p className="brutal-text">

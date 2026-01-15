@@ -297,7 +297,7 @@ export const NewBookingPage: React.FC = () => {
                   className={`p-4 border-4 text-left transition-all duration-200
                     ${selectedGymId === gym.id
                       ? 'bg-orange-primary text-white border-gray-dark brutal-shadow'
-                      : 'bg-white border-gray-dark hover:border-orange-primary brutal-shadow-sm'}`}
+                      : 'bg-gray-light border-gray-dark hover:border-orange-primary brutal-shadow-sm'}`}
                 >
                   <div className="font-display font-bold uppercase">{gym.name}</div>
                   <div className={`text-sm font-body mt-1 ${selectedGymId === gym.id ? 'text-white/80' : 'text-gray-medium'}`}>
@@ -343,7 +343,7 @@ export const NewBookingPage: React.FC = () => {
                       className={`flex-shrink-0 w-16 h-20 flex flex-col items-center justify-center border-3 transition-all
                         ${isSelected
                           ? 'bg-orange-primary text-white border-gray-dark brutal-shadow-sm'
-                          : 'bg-white border-gray-200 hover:border-orange-primary'}`}
+                          : 'bg-gray-light border-gray-200 hover:border-orange-primary'}`}
                     >
                       <span className={`text-xs font-body uppercase ${isSelected ? 'text-white/80' : 'text-gray-medium'}`}>
                         {isToday ? 'Сегодня' : day.toLocaleDateString('ru-RU', { weekday: 'short' })}
@@ -379,9 +379,9 @@ export const NewBookingPage: React.FC = () => {
                         key={`${slot.starts_at}-${slot.ends_at}`}
                         onClick={() => handleSlotSelect(slot.id)}
                         className={`h-12 flex flex-col items-center justify-center font-display font-bold border-3 transition-all text-center leading-tight
-                          ${isSelected
+                        ${isSelected
                             ? 'bg-orange-primary text-white border-gray-dark brutal-shadow-sm'
-                            : 'bg-white border-gray-200 hover:border-orange-primary'}`}
+                            : 'bg-gray-light border-gray-200 hover:border-orange-primary'}`}
                       >
                         <span>{formatTime(slot.starts_at)}</span>
                         <span className={`text-xs font-body ${isSelected ? 'text-white/80' : 'text-gray-medium'}`}>
@@ -458,7 +458,7 @@ export const NewBookingPage: React.FC = () => {
                     className={`p-4 border-3 text-left transition-all
                       ${selectedCoachSlotId === null
                         ? 'bg-gray-dark text-white border-gray-dark'
-                        : 'bg-white border-gray-200 hover:border-gray-dark'}`}
+                        : 'bg-gray-light border-gray-200 hover:border-gray-dark'}`}
                   >
                     <div className="font-display font-bold">Без тренера</div>
                     <div className={`text-sm font-body ${selectedCoachSlotId === null ? 'text-white/80' : 'text-gray-medium'}`}>
@@ -477,7 +477,7 @@ export const NewBookingPage: React.FC = () => {
                         className={`p-4 border-3 text-left transition-all
                           ${isSelected
                             ? 'bg-orange-primary text-white border-gray-dark'
-                            : 'bg-white border-gray-200 hover:border-orange-primary'}`}
+                            : 'bg-gray-light border-gray-200 hover:border-orange-primary'}`}
                       >
                         <div className="font-display font-bold">{coachName}</div>
                         <div className={`text-sm font-body ${isSelected ? 'text-white/80' : 'text-gray-medium'}`}>

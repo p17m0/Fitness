@@ -50,7 +50,7 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Modal */}
       <div
         className={`
-          relative w-full ${sizeClasses[size]} bg-white border-4 border-gray-dark
+          relative w-full ${sizeClasses[size]} bg-gray-light border-4 border-gray-dark
           animate-scale-in
         `}
         style={{ boxShadow: '12px 12px 0px 0px #1A1A1A' }}

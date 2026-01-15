@@ -10,7 +10,7 @@ class Api::V1::Users::SessionsController < Devise::SessionsController
     if resource.persisted?
       render json: { status: 'success', user: resource, token: jwt_token(resource) }, status: :ok
     else
-      render json: { status: 'error', errors: resource.errors.full_messages }, status: :unprocessable_entity
+      render json: { status: 'error', errors: resource.errors.full_messages }, status: 401
     end
   end
 

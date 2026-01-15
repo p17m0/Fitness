@@ -14,7 +14,8 @@
   }
 
   body {
-    @apply bg-cream text-gray-dark font-body;
+    background-color: #696969; /* DimGray фон */
+    @apply text-gray-dark font-body;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -66,7 +67,7 @@
   }
 
   .brutal-button-secondary {
-    @apply brutal-button bg-white text-gray-dark;
+    @apply brutal-button bg-gray-light text-gray-dark;
   }
 
   .brutal-button-secondary:hover:not(:disabled) {
@@ -83,7 +84,7 @@
 
   /* ===== CARDS ===== */
   .brutal-card {
-    @apply bg-white p-6 md:p-8 border-4 border-gray-dark;
+    @apply bg-gray-light p-6 md:p-8 border-4 border-gray-dark;
     box-shadow: 10px 10px 0px 0px #1A1A1A;
   }
 
@@ -126,7 +127,7 @@
 
   /* ===== FORM INPUTS ===== */
   .brutal-input {
-    @apply w-full p-3 border-4 border-gray-dark font-body font-medium bg-white;
+    @apply w-full p-3 border-4 border-gray-dark font-body font-medium bg-gray-light;
     @apply transition-all duration-200;
     @apply focus:outline-none focus:ring-0;
     box-shadow: 3px 3px 0px 0px #1A1A1A;
@@ -183,7 +184,7 @@
   }
 
   .brutal-badge-secondary {
-    @apply brutal-badge bg-white text-gray-dark;
+    @apply brutal-badge bg-gray-light text-gray-dark;
   }
 
   /* ===== SKELETON LOADER ===== */

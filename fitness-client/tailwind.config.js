@@ -12,7 +12,7 @@ module.exports = {
         'orange-dark': '#E55A2B',
         'gray-dark': '#1A1A1A',
         'gray-medium': '#2C2C2C',
-        'gray-light': '#F5F5F5',
+        'gray-light': '#FFFFFF', // Возвращаем элементы к белому
         'cream': '#FFF8F0',
         'success': '#22C55E',
         'error': '#EF4444',

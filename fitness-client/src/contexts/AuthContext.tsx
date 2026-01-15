@@ -92,6 +92,9 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   );
 
   const handleAuthSuccess = (response: AuthSuccessResponse) => {
+    // Обновляем ref и localStorage синхронно, чтобы первый запрос сразу получил Authorization
+    tokenRef.current = response.token;
+    localStorage.setItem(STORAGE_TOKEN_KEY, response.token);
     setToken(response.token);
     setUser(response.user);
   };

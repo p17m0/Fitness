@@ -70,7 +70,7 @@ export const GymsPage: React.FC = () => {
             {gyms.map((gym, index) => (
               <div
                 key={gym.id}
-                className="bg-white border-4 border-gray-dark p-5 brutal-shadow-sm opacity-0 animate-fade-in-up hover:brutal-shadow transition-all duration-200"
+                className="bg-gray-light border-4 border-gray-dark p-5 brutal-shadow-sm opacity-0 animate-fade-in-up hover:brutal-shadow transition-all duration-200"
                 style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'forwards' }}
               >
                 <div className="flex items-start gap-3 mb-4">

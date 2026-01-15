@@ -91,7 +91,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <div className="min-h-screen bg-cream flex flex-col">
       {/* Header */}
-      <header className="bg-white py-4 px-4 sm:px-6 lg:px-8 border-b-4 border-gray-dark sticky top-0 z-30">
+      <header className="bg-gray-light py-4 px-4 sm:px-6 lg:px-8 border-b-4 border-gray-dark sticky top-0 z-30">
         <div className="container mx-auto">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
@@ -101,11 +101,11 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-2xl md:text-3xl font-display font-bold text-orange-primary uppercase tracking-tight">
-                  HHSportFit
+                  Умный фитнес
                 </h1>
-                <p className="text-xs font-body font-semibold text-gray-medium uppercase tracking-wide">
+                {/* <p className="text-xs font-body font-semibold text-gray-medium uppercase tracking-wide">
                   Фитнес без оправданий
-                </p>
+                </p> */}
               </div>
             </NavLink>
 
@@ -167,7 +167,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden p-3 border-4 border-gray-dark bg-white brutal-shadow-sm"
+              className="md:hidden p-3 border-4 border-gray-dark bg-gray-light brutal-shadow-sm"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
               aria-expanded={mobileMenuOpen}
@@ -196,7 +196,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
       >
         <div className="flex flex-col h-full">
           {/* Mobile Menu Header */}
-          <div className="flex items-center justify-between p-4 border-b-4 border-gray-dark bg-white">
+          <div className="flex items-center justify-between p-4 border-b-4 border-gray-dark bg-gray-light">
             <span className="font-display font-bold text-lg uppercase">Меню</span>
             <button
               className="p-2 border-2 border-gray-dark"
@@ -257,7 +257,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
           </nav>
 
           {/* Mobile Menu Footer */}
-          <div className="p-4 border-t-4 border-gray-dark bg-white space-y-3">
+          <div className="p-4 border-t-4 border-gray-dark bg-gray-light space-y-3">
             <a
               href="tel:+70000000000"
               className="brutal-button-secondary w-full flex items-center justify-center gap-2"
@@ -281,22 +281,11 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
 
       {/* Section Bar */}
       <div className="bg-orange-primary text-white border-b-4 border-gray-dark px-4 sm:px-6 lg:px-8 py-3">
-        <div className="container mx-auto flex items-center justify-between">
+        <div className="container mx-auto flex items-center justify-start">
           <div className="flex items-center gap-3">
             <span className="font-display font-bold uppercase text-sm tracking-wider">
               {currentTitle}
             </span>
-          </div>
-          <div className="flex items-center gap-2">
-            {isAuthenticated ? (
-              <span className="text-xs font-body font-semibold uppercase bg-white text-gray-dark px-3 py-1 border-2 border-gray-dark brutal-shadow-sm">
-                {user?.email?.split('@')[0] || 'Клиент'}
-              </span>
-            ) : (
-              <span className="text-xs font-body font-semibold uppercase bg-white/20 text-white px-3 py-1 border-2 border-white/40">
-                Гость
-              </span>
-            )}
           </div>
         </div>
       </div>
@@ -316,10 +305,10 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
               <div className="w-10 h-10 bg-orange-primary border-2 border-white flex items-center justify-center">
                 <img src="/logo.jpg" alt="" className="w-7 h-7 object-contain" />
               </div>
-              <span className="font-display font-bold text-lg uppercase">HHSportFit</span>
+              <span className="font-display font-bold text-lg uppercase">Умный фитнес</span>
             </div>
             <p className="text-sm font-body text-gray-400 text-center md:text-right">
-              © 2026 HHSportFit. Все права защищены.
+              © 2026 Умный фитнес. Все права защищены.
             </p>
           </div>
         </div>

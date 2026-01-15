@@ -131,7 +131,7 @@ export const BookingsPage: React.FC = () => {
       {/* User Info Card */}
       <div className="brutal-card bg-orange-primary text-white">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-white border-4 border-gray-dark brutal-shadow flex items-center justify-center">
+          <div className="w-16 h-16 bg-gray-light border-4 border-gray-dark brutal-shadow flex items-center justify-center">
             <User size={32} className="text-orange-primary" />
           </div>
           <div>
@@ -173,7 +173,7 @@ export const BookingsPage: React.FC = () => {
             {bookings.map((booking, index) => (
               <div
                 key={booking.id}
-                className="bg-white border-4 border-gray-dark p-4 brutal-shadow-sm space-y-3 opacity-0 animate-fade-in-up"
+                className="bg-gray-light border-4 border-gray-dark p-4 brutal-shadow-sm space-y-3 opacity-0 animate-fade-in-up"
                 style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'forwards' }}
               >
                 <div className="flex items-center justify-between">
@@ -261,7 +261,7 @@ export const BookingsPage: React.FC = () => {
       {/* Coach selection modal */}
       {coachModalOpen && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
-          <div className="bg-white border-4 border-gray-dark brutal-shadow max-w-lg w-full p-4 space-y-4 relative">
+          <div className="bg-gray-light border-4 border-gray-dark brutal-shadow max-w-lg w-full p-4 space-y-4 relative">
             <button
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
               onClick={() => { setCoachModalOpen(false); setBookingForCoach(null); }}

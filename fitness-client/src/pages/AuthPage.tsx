@@ -221,7 +221,7 @@ export const AuthPage: React.FC = () => {
             className={`flex-1 py-3 font-display font-bold uppercase text-sm tracking-wide transition-colors ${
               mode === 'login'
                 ? 'bg-orange-primary text-white'
-                : 'bg-white text-gray-dark hover:bg-gray-light'
+                : 'bg-gray-light text-gray-dark hover:bg-cream'
             }`}
             type="button"
             onClick={() => switchMode('login')}
@@ -232,7 +232,7 @@ export const AuthPage: React.FC = () => {
             className={`flex-1 py-3 font-display font-bold uppercase text-sm tracking-wide border-l-4 border-gray-dark transition-colors ${
               mode === 'register'
                 ? 'bg-orange-primary text-white'
-                : 'bg-white text-gray-dark hover:bg-gray-light'
+                : 'bg-gray-light text-gray-dark hover:bg-cream'
             }`}
             type="button"
             onClick={() => switchMode('register')}
