@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ShoppingCart, Wallet, CheckCircle, Clock, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/Toast';
 import { ClientSubscription, SubscriptionPlan } from '../api/types';
+import { HttpError } from '../api/ApiClient';
 import { formatDateTime, formatPrice } from '../utils/format';
-import { ListSkeleton } from '../components/ui/Skeleton';
-import { AuthRequiredState, NoSubscriptionsState } from '../components/ui/EmptyState';
+import { NoSubscriptionsState } from '../components/ui/EmptyState';
 import { PageLoader } from '../components/ui/Loader';
 
 export const SubscriptionsPage: React.FC = () => {
@@ -19,35 +19,54 @@ export const SubscriptionsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const ready = useMemo(() => isAuthenticated, [isAuthenticated]);
-
   useEffect(() => {
-    if (!ready) {
-      setLoading(false);
-      return;
-    }
     let aborted = false;
     setLoading(true);
 
-    Promise.all([services.subscriptionPlans.list(), services.clientSubscriptions.list()])
-      .then(([plans, subs]) => {
+    const load = async () => {
+      try {
+        const plans = await services.subscriptionPlans.list();
         if (aborted) return;
         setSubscriptionPlans(plans);
-        setClientSubscriptions(subs);
-      })
-      .catch((err) => {
-        toast.error('Не удалось загрузить данные');
-        console.error(err);
-      })
-      .finally(() => {
+
+        if (!isAuthenticated) {
+          setClientSubscriptions([]);
+          return;
+        }
+
+        try {
+          const subs = await services.clientSubscriptions.list();
+          if (!aborted) setClientSubscriptions(subs);
+        } catch (err) {
+          if (err instanceof HttpError && err.status === 401) {
+            if (!aborted) setClientSubscriptions([]);
+          } else {
+            toast.error('Не удалось загрузить абонементы клиента');
+            console.error(err);
+          }
+        }
+      } catch (err) {
+        if (!aborted) {
+          toast.error('Не удалось загрузить данные');
+          console.error(err);
+        }
+      } finally {
         if (!aborted) setLoading(false);
-      });
+      }
+    };
+
+    load();
 
     return () => { aborted = true; };
-  }, [ready, services]);
+  }, [isAuthenticated, services, toast]);
 
   const handlePurchasePlan = async () => {
     if (!selectedPlanId) return;
+    if (!isAuthenticated) {
+      toast.info('Войдите, чтобы купить абонемент');
+      navigate('/auth');
+      return;
+    }
 
     setActionLoading(true);
     try {
@@ -66,16 +85,6 @@ export const SubscriptionsPage: React.FC = () => {
   };
 
   const selectedPlan = subscriptionPlans.find(p => p.id === selectedPlanId);
-
-  if (!ready) {
-    return (
-      <div className="container mx-auto">
-        <div className="brutal-card">
-          <AuthRequiredState onNavigate={() => navigate('/auth')} />
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -121,7 +130,7 @@ export const SubscriptionsPage: React.FC = () => {
                 </div>
 
                 <div className={`text-3xl font-display font-bold mb-3 ${selectedPlanId === plan.id ? '' : 'text-orange-primary'}`}>
-                  {formatPrice(plan.price_cents, plan.currency)}
+                  {formatPrice(plan.price)}
                 </div>
 
                 <div className={`space-y-2 text-sm ${selectedPlanId === plan.id ? 'text-white/80' : 'text-gray-medium'}`}>
@@ -154,7 +163,7 @@ export const SubscriptionsPage: React.FC = () => {
               <div>
                 <p className="font-display font-bold uppercase">Выбранный план:</p>
                 <p className="font-body text-lg">
-                  {selectedPlan.name} — {formatPrice(selectedPlan.price_cents, selectedPlan.currency)}
+                  {selectedPlan.name} — {formatPrice(selectedPlan.price)}
                 </p>
               </div>
               <button
@@ -177,7 +186,7 @@ export const SubscriptionsPage: React.FC = () => {
       </div>
 
       {/* My Subscriptions */}
-      <div className="brutal-card">
+      {isAuthenticated && (<div className="brutal-card">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-12 h-12 bg-gray-dark border-4 border-gray-dark brutal-shadow-sm flex items-center justify-center">
             <ShoppingCart size={24} className="text-white" />
@@ -241,6 +250,7 @@ export const SubscriptionsPage: React.FC = () => {
           </p>
         )}
       </div>
+    )}
     </div>
   );
 };

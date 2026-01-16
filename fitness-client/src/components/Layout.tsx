@@ -23,14 +23,14 @@ const navLinks = [
 ];
 
 const pageTitle: Record<string, string> = {
-  '/': 'Главная',
-  '/auth': 'Авторизация',
-  '/new-booking': 'Новое бронирование',
-  '/gyms': 'Залы',
-  '/coaches': 'Тренеры',
-  '/programs': 'Программы',
-  '/subscriptions': 'Абонементы',
-  '/bookings': 'Мои бронирования',
+  '/': ' ',
+  '/auth': ' ',
+  '/new-booking': ' ',
+  '/gyms': ' ',
+  '/coaches': ' ',
+  '/programs': ' ',
+  '/subscriptions': ' ',
+  '/bookings': ' ',
 };
 
 const NavLinkItem: React.FC<{

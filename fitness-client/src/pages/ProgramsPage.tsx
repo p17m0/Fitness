@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/Toast';
 import { Program } from '../api/types';
-import { formatPrice } from '../utils/format';
 import { ListSkeleton } from '../components/ui/Skeleton';
 import { AuthRequiredState, NoProgramsState } from '../components/ui/EmptyState';
 
@@ -116,9 +115,6 @@ export const ProgramsPage: React.FC = () => {
                       <span className="font-display font-bold">
                         {getDurationLabel(program.duration_minutes)}
                       </span>
-                    </div>
-                    <div className="text-xl font-display font-bold text-orange-primary">
-                      {formatPrice(program.price_cents, program.currency)}
                     </div>
                   </div>
                 </div>

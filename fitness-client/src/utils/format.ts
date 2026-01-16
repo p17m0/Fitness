@@ -1,6 +1,6 @@
-export const formatPrice = (cents?: number, currency?: string) => {
-  if (typeof cents !== 'number' || !currency) return '—';
-  return `${(cents / 100).toLocaleString('ru-RU')} ${currency}`;
+export const formatPrice = (price?: number, currency?: string) => {
+  // if (typeof price !== 'number' || !currency) return '—';
+  return `${(price).toLocaleString('ru-RU')} рублей`;
 };
 
 export const formatDateTime = (value: string) =>

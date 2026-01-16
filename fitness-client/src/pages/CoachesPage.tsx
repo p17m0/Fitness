@@ -138,7 +138,7 @@ export const CoachesPage: React.FC = () => {
                 </div>
 
                 {/* Rating placeholder */}
-                <div className="flex items-center gap-1 mt-4">
+                {/* <div className="flex items-center gap-1 mt-4">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
@@ -147,7 +147,7 @@ export const CoachesPage: React.FC = () => {
                     />
                   ))}
                   <span className="text-xs font-display font-bold text-gray-medium ml-2">4.0</span>
-                </div>
+                </div> */}
               </div>
             ))}
           </div>

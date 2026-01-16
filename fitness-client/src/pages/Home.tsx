@@ -136,10 +136,10 @@ export const HomePage: React.FC = () => {
             </p>
             <div className="pt-4">
               <NavLink
-                to={isAuthenticated ? "/programs" : "/auth"}
+                to={"/subscriptions"}
                 className="font-display font-bold text-orange-primary uppercase tracking-wide inline-flex items-center gap-2 hover:gap-3 transition-all"
               >
-                Смотреть программы
+                Смотреть тарифы
                 <ArrowRight size={16} />
               </NavLink>
             </div>

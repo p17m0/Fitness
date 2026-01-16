@@ -42,7 +42,7 @@ export interface Program {
   name: string;
   description?: string | null;
   duration_minutes: number;
-  price_cents: number;
+  price: number;
   currency: string;
 }
 
@@ -52,7 +52,7 @@ export interface SubscriptionPlan {
   description?: string | null;
   visits_count: number;
   duration_days: number;
-  price_cents: number;
+  price: number;
   currency: string;
 }
 

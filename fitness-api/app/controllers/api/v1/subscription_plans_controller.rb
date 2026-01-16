@@ -1,4 +1,6 @@
 class Api::V1::SubscriptionPlansController < Api::BaseController
+  skip_before_action :authenticate_user!
+
   def index
     render json: SubscriptionPlan.all
   end
@@ -9,11 +11,11 @@ class Api::V1::SubscriptionPlansController < Api::BaseController
 
   private
 
-  def subscription_plan
-    @subscription_plan ||= SubscriptionPlan.find(params[:id])
-  end
+    def subscription_plan
+      @subscription_plan ||= SubscriptionPlan.find(params[:id])
+    end
 
-  def subscription_plan_params
-    params.require(:subscription_plan).permit(:name, :description, :visits_count, :duration_days, :price)
-  end
+    def subscription_plan_params
+      params.require(:subscription_plan).permit(:name, :description, :visits_count, :duration_days, :price)
+    end
 end
