@@ -85,6 +85,7 @@ export interface ClientSubscription {
 export interface Booking {
   id: number;
   coach_name?: string | null;
+  coach_number?: string | null;
   starts_at: string;
 }
 

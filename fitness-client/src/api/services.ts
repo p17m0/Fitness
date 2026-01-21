@@ -104,8 +104,13 @@ export class CoachSlotsService {
 export class ClientSubscriptionsService {
   constructor(private readonly client: ApiClient) {}
 
-  list() {
-    return this.client.request<ClientSubscription[]>('/api/v1/client_subscriptions');
+  list(params?: { isExpired?: boolean }) {
+    const searchParams = new URLSearchParams();
+    if (params?.isExpired) searchParams.set('is_expired', 'true');
+    const search = searchParams.toString();
+    return this.client.request<ClientSubscription[]>(
+      `/api/v1/client_subscriptions${search ? `?${search}` : ''}`
+    );
   }
 
   create(payload: CreateClientSubscriptionRequest) {
@@ -119,8 +124,11 @@ export class ClientSubscriptionsService {
 export class BookingsService {
   constructor(private readonly client: ApiClient) {}
 
-  list() {
-    return this.client.request<Booking[]>('/api/v1/bookings');
+  list(params?: { isExpired?: boolean }) {
+    const searchParams = new URLSearchParams();
+    if (params?.isExpired) searchParams.set('is_expired', 'true');
+    const search = searchParams.toString();
+    return this.client.request<Booking[]>(`/api/v1/bookings${search ? `?${search}` : ''}`);
   }
 
   create(payload: CreateBookingRequest) {

@@ -86,6 +86,9 @@ components:
         id: { type: integer }
         gym_slot_id: { type: integer }
         coach_slot_id: { type: integer, nullable: true }
+        coach_name: { type: string, nullable: true }
+        coach_number: { type: string, nullable: true }
+        starts_at: { type: string, format: date-time }
         status: { type: string, enum: [booked, cancelled] }
       required: [id, gym_slot_id, status]
 paths:
@@ -383,8 +386,14 @@ paths:
     delete: { summary: Удалить слот, security: [{ bearerAuth: [] }], responses: { "204": { description: Удалено } } }
   /api/v1/client_subscriptions:
     get:
-      summary: Мои абонементы
+      summary: Мои подписки
       security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: is_expired
+          required: false
+          schema: { type: boolean }
+          description: "true — только архивные, иначе активные"
       responses:
         "200":
           content:
@@ -417,15 +426,21 @@ paths:
     get:
       summary: Мои бронирования
       security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: is_expired
+          required: false
+          schema: { type: boolean }
+          description: "true — только прошедшие, иначе предстоящие"
       responses:
         "200":
           content:
             application/json:
               example:
                 - id: 11
-                  gym_slot_id: 10
-                  coach_slot_id: 5
-                  status: booked
+                  coach_name: "Иван Иванов"
+                  coach_number: "+79998887766"
+                  starts_at: "2026-01-16T18:00:00Z"
     post:
       summary: Забронировать зал (и тренера опционально)
       security: [{ bearerAuth: [] }]

@@ -47,10 +47,10 @@ export const ButtonLoader: React.FC<{ className?: string }> = ({ className = '' 
 // Page loading state with branding
 export const PageLoader: React.FC<{ text?: string }> = ({ text = 'Загрузка...' }) => (
   <div className="min-h-[400px] flex flex-col items-center justify-center gap-6 animate-fade-in">
-    <div className="relative">
-      <div className="w-20 h-20 bg-orange-primary border-4 border-gray-dark brutal-shadow flex items-center justify-center">
-        <Dumbbell size={40} className="text-white animate-pulse-soft" />
-      </div>
+      <div className="relative">
+        <div className="w-20 h-20 bg-orange-primary border-4 border-gray-dark brutal-shadow flex items-center justify-center">
+          <Dumbbell size={40} className="text-white" />
+        </div>
       <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-gray-dark rounded-full animate-bounce" />
     </div>
     <p className="font-display font-bold text-lg uppercase tracking-wider text-gray-medium">

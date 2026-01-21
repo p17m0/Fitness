@@ -32,6 +32,13 @@ class ClientSubscription < ApplicationRecord
     save!
   end
 
+  def add_visit!
+    # raise "Нет доступных посещений" if remaining_visits <= 0
+    self.remaining_visits += 1
+    self.status = :active
+    save!
+  end
+
   def active_for_booking?
     active_status? && remaining_visits.positive? && (expires_at.nil? || expires_at >= Time.current)
   end

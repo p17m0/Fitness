@@ -21,7 +21,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   return (
     <div className={`text-center py-12 px-6 ${className}`}>
-      <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-gray-light border-4 border-gray-dark brutal-shadow animate-float">
+      <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-gray-light border-4 border-gray-dark brutal-shadow">
         <Icon size={36} className="text-orange-primary" />
       </div>
       <h4 className="font-display font-bold text-xl uppercase tracking-wide mb-2">{title}</h4>

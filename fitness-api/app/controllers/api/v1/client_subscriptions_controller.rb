@@ -1,7 +1,8 @@
 class Api::V1::ClientSubscriptionsController < Api::BaseController
   def index
     return render_error("Только клиент", :forbidden) unless current_client
-    render json: current_client.client_subscriptions.includes(:subscription_plan)
+    is_filter = params[:is_expired] ? ClientSubscription.expired : ClientSubscription.active_for_booking
+    render json: current_client.client_subscriptions.includes(:subscription_plan).merge(is_filter)
   end
 
   def show
@@ -20,7 +21,7 @@ class Api::V1::ClientSubscriptionsController < Api::BaseController
 
   private
 
-  def subscription_params
-    params.require(:client_subscription).permit(:subscription_plan_id)
-  end
+    def subscription_params
+      params.require(:client_subscription).permit(:subscription_plan_id)
+    end
 end

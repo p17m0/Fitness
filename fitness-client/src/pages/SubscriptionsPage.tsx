@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { ShoppingCart, Wallet, CheckCircle, Clock, CreditCard } from 'lucide-react';
+import { Wallet, CheckCircle, Clock, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/Toast';
-import { ClientSubscription, SubscriptionPlan } from '../api/types';
-import { HttpError } from '../api/ApiClient';
-import { formatDateTime, formatPrice } from '../utils/format';
+import { SubscriptionPlan } from '../api/types';
+import { formatPrice } from '../utils/format';
 import { NoSubscriptionsState } from '../components/ui/EmptyState';
 import { PageLoader } from '../components/ui/Loader';
 
@@ -14,7 +13,6 @@ export const SubscriptionsPage: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([]);
-  const [clientSubscriptions, setClientSubscriptions] = useState<ClientSubscription[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -28,23 +26,6 @@ export const SubscriptionsPage: React.FC = () => {
         const plans = await services.subscriptionPlans.list();
         if (aborted) return;
         setSubscriptionPlans(plans);
-
-        if (!isAuthenticated) {
-          setClientSubscriptions([]);
-          return;
-        }
-
-        try {
-          const subs = await services.clientSubscriptions.list();
-          if (!aborted) setClientSubscriptions(subs);
-        } catch (err) {
-          if (err instanceof HttpError && err.status === 401) {
-            if (!aborted) setClientSubscriptions([]);
-          } else {
-            toast.error('Не удалось загрузить абонементы клиента');
-            console.error(err);
-          }
-        }
       } catch (err) {
         if (!aborted) {
           toast.error('Не удалось загрузить данные');
@@ -58,7 +39,7 @@ export const SubscriptionsPage: React.FC = () => {
     load();
 
     return () => { aborted = true; };
-  }, [isAuthenticated, services, toast]);
+  }, [services, toast]);
 
   const handlePurchasePlan = async () => {
     if (!selectedPlanId) return;
@@ -73,8 +54,6 @@ export const SubscriptionsPage: React.FC = () => {
       await services.clientSubscriptions.create({
         client_subscription: { subscription_plan_id: selectedPlanId }
       });
-      const fresh = await services.clientSubscriptions.list();
-      setClientSubscriptions(fresh);
       setSelectedPlanId(null);
       toast.success('Абонемент успешно приобретён!');
     } catch (err) {
@@ -185,72 +164,6 @@ export const SubscriptionsPage: React.FC = () => {
         )}
       </div>
 
-      {/* My Subscriptions */}
-      {isAuthenticated && (<div className="brutal-card">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-gray-dark border-4 border-gray-dark brutal-shadow-sm flex items-center justify-center">
-            <ShoppingCart size={24} className="text-white" />
-          </div>
-          <div>
-            <h3 className="brutal-title text-xl md:text-2xl mb-0">Мои абонементы</h3>
-            <p className="text-sm font-body text-gray-medium">
-              {clientSubscriptions.length} активных
-            </p>
-          </div>
-        </div>
-
-        {clientSubscriptions.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {clientSubscriptions.map((sub, index) => (
-              <div
-                key={sub.id}
-                className="bg-gray-light border-4 border-gray-dark p-4 brutal-shadow-sm opacity-0 animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'forwards' }}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-display font-bold text-lg">Абонемент #{sub.id}</span>
-                  <span className={`
-                    px-2 py-1 text-xs font-display font-bold uppercase
-                    ${sub.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-600'}
-                  `}>
-                    {sub.status === 'active' ? 'Активен' : sub.status}
-                  </span>
-                </div>
-
-                <div className="space-y-2 text-sm font-body">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-medium">Осталось посещений:</span>
-                    <span className="font-display font-bold text-orange-primary text-lg">
-                      {sub.remaining_visits}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-medium">Истекает:</span>
-                    <span className="font-display font-bold">
-                      {sub.expires_at ? formatDateTime(sub.expires_at) : 'Бессрочно'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Progress bar */}
-                {sub.remaining_visits !== undefined && (
-                  <div className="mt-3 h-2 bg-gray-200 border-2 border-gray-dark">
-                    <div
-                      className="h-full bg-orange-primary transition-all duration-500"
-                      style={{ width: `${Math.min(100, (sub.remaining_visits / 30) * 100)}%` }}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-center py-8 font-body text-gray-medium">
-            У вас пока нет активных абонементов. Выберите план выше!
-          </p>
-        )}
-      </div>
-    )}
     </div>
   );
 };

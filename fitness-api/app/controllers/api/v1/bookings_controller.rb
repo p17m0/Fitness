@@ -1,7 +1,12 @@
 class Api::V1::BookingsController < Api::BaseController
   def index
     return render_error("Только клиент", :forbidden) unless current_client
-    render json: current_client.bookings.includes(:gym_slot, :coach_slot).map { |booking| serialize_booking(booking) }
+    filter = params[:is_expired] ? GymSlot.expired : GymSlot.upcoming
+    render json: current_client.bookings
+      .joins(:gym_slot).includes(:coach_slot)
+      .merge(filter)
+      .order(gym_slot: {starts_at: :desc})
+      .map { |booking| serialize_booking(booking) }
   end
 
   def create
@@ -49,18 +54,25 @@ class Api::V1::BookingsController < Api::BaseController
   def destroy
     return render_error("Только клиент", :forbidden) unless current_client
     booking = current_client.bookings.lock.find(params[:id])
-    # TODO отменять только за СУТКИ можно
 
-    is_available_to_cancel = booking.gym_slot.starts_at - Time.current < 24.hours
-    return render_error("Можно отменить только за 24 часа") if is_available_to_cancel
+    unless Rails.env.development?
+      is_available_to_cancel = booking.gym_slot.starts_at - Time.current < 24.hours
+      return render_error("Можно отменить только за 24 часа") if is_available_to_cancel
+    end
 
     ActiveRecord::Base.transaction do
       booking.gym_slot.lock! if booking.gym_slot
       booking.coach_slot&.lock!
 
-      booking.update!(status: :cancelled)
+      # booking.update!(status: :cancelled)
+      booking.gym_slot.update(status: :available)
+      booking.coach_slot&.update(status: :available)
+
+      current_client.client_subscriptions.active_for_booking.order(:expires_at).first.add_visit!
+
       booking.gym_slot.release! if booking.gym_slot
       booking.coach_slot&.release!
+      booking.destroy
     end
     head :no_content
   rescue ActiveRecord::RecordInvalid => e
@@ -73,6 +85,7 @@ class Api::V1::BookingsController < Api::BaseController
     {
       id: booking.id,
       coach_name: booking&.coach_slot&.coach&.user&.first_name,
+      coach_number: booking&.coach_slot&.coach&.user&.phone_number,
       starts_at: booking&.gym_slot&.starts_at
     }
   end

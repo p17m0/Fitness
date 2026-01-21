@@ -85,7 +85,7 @@ export const HomePage: React.FC = () => {
               </>
             ) : (
               <NavLink to="/new-booking" className="brutal-button flex items-center gap-2">
-                Забронировать зал
+                Забронировать
                 <ArrowRight size={18} />
               </NavLink>
             )}

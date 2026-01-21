@@ -41,16 +41,10 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
-        onClick={onClose}
-      />
-
       {/* Modal */}
       <div
         className={`
-          relative w-full ${sizeClasses[size]} bg-gray-light border-4 border-gray-dark
+          relative z-10 w-full ${sizeClasses[size]} bg-gray-light border-4 border-gray-dark
           animate-scale-in
         `}
         style={{ boxShadow: '12px 12px 0px 0px #1A1A1A' }}

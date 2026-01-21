@@ -19,7 +19,7 @@ const navLinks = [
   { to: '/new-booking', label: 'Бронь', icon: CalendarPlus, protected: true },
   { to: '/coaches', label: 'Тренеры', icon: UserCheck, protected: true },
   { to: '/subscriptions', label: 'Абонементы', icon: Wallet, protected: true },
-  { to: '/programs', label: 'Программы', icon: Dumbbell, protected: true },
+  // { to: '/programs', label: 'Программы', icon: Dumbbell, protected: true },
 ];
 
 const pageTitle: Record<string, string> = {

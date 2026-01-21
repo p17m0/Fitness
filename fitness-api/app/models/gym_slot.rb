@@ -10,15 +10,12 @@ class GymSlot < ApplicationRecord
   validate :within_booking_horizon
 
   scope :upcoming, -> { where("starts_at >= ?", Time.current) }
-  scope :available_to_book, lambda {
-    now = Time.current
-    horizon_end = now + BOOKING_HORIZON_DAYS.days
-    available_status.where(starts_at: now..horizon_end)
-  }
+  scope :expired, -> { where("starts_at < ?", Time.current) }
+
   scope :available, -> { where(status: :available) }
   scope :booked, -> { where(status: :booked) }
   scope :cancelled, -> { where(status: :cancelled) }
-  scope :upcoming, -> { where("starts_at >= ?", Time.current) }
+
   scope :available_to_book, lambda {
     now = Time.current
     horizon_end = now + BOOKING_HORIZON_DAYS.days
