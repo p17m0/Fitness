@@ -5,17 +5,19 @@ services:
     build:
       context: ./fitness-api
       dockerfile: Dockerfile.dev
-    container_name: fitness-api
+    container_name: fitness-api-dev
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3001:3000"
     volumes:
       - ./fitness-api:/rails
-      - fitness-api-bundle:/usr/local/bundle
-      - fitness-api-storage:/rails/storage
+      - fitness-api-bundle-dev:/usr/local/bundle
+      - fitness-api-storage-dev:/rails/storage
     environment:
       - RAILS_ENV=development
       - PORT=3000
       - BUNDLE_PATH=/usr/local/bundle
+      - RAILS_LOG_TO_STDOUT=1
+      - APP_HOSTS=dev.umniy-fitness.ru
     command: >
       sh -c "
         bundle install &&
@@ -25,30 +27,31 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - fitness-network
+      - fitness-network-dev
 
   fitness-client:
     build:
       context: ./fitness-client
       dockerfile: Dockerfile
-    container_name: fitness-client
+    container_name: fitness-client-dev
     ports:
-      - "5173:5173"
+      - "127.0.0.1:5173:5173"
     volumes:
       - ./fitness-client:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
+      - VITE_API_URL=https://dev.umniy-fitness.ru
     networks:
-      - fitness-network
+      - fitness-network-dev
     depends_on:
       - fitness-api
 
 volumes:
-  fitness-api-bundle:
-  fitness-api-storage:
+  fitness-api-bundle-dev:
+  fitness-api-storage-dev:
 
 networks:
-  fitness-network:
+  fitness-network-dev:
     driver: bridge
 

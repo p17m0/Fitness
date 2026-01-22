@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  fitness-api:
+    build:
+      context: ./fitness-api
+      dockerfile: Dockerfile
+    container_name: fitness-api-prod
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - fitness-api-storage-prod:/rails/storage
+    environment:
+      - RAILS_ENV=production
+      - RAILS_LOG_TO_STDOUT=1
+      - RAILS_SERVE_STATIC_FILES=1
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - APP_HOSTS=umniy-fitness.ru
+    networks:
+      - fitness-network-prod
+
+  fitness-client:
+    build:
+      context: ./fitness-client
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: https://umniy-fitness.ru
+    container_name: fitness-client-prod
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - fitness-network-prod
+    depends_on:
+      - fitness-api
+
+volumes:
+  fitness-api-storage-prod:
+
+networks:
+  fitness-network-prod:
+    driver: bridge
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.11
+    container_name: fitness-traefik-prod
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --accesslog=true
+      - --log.level=INFO
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - fitness-network
+
+  fitness-api:
+    build:
+      context: ./fitness-api
+      dockerfile: Dockerfile
+    container_name: fitness-api-prod
+    environment:
+      - RAILS_ENV=production
+      - RAILS_LOG_TO_STDOUT=true
+      - PORT=3000
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+    volumes:
+      - fitness-api-storage-prod:/rails/storage
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.fitness-prod-api.rule=Host(`umniy-fitness.ru`) && (PathPrefix(`/api`) || PathPrefix(`/admin`) || PathPrefix(`/up`))
+      - traefik.http.routers.fitness-prod-api.entrypoints=web
+      - traefik.http.routers.fitness-prod-api.priority=100
+      - traefik.http.services.fitness-prod-api.loadbalancer.server.port=3000
+    networks:
+      - fitness-network
+
+  fitness-client:
+    build:
+      context: ./fitness-client
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: http://umniy-fitness.ru
+    container_name: fitness-client-prod
+    depends_on:
+      - fitness-api
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.fitness-prod.rule=Host(`umniy-fitness.ru`)
+      - traefik.http.routers.fitness-prod.entrypoints=web
+      - traefik.http.services.fitness-prod.loadbalancer.server.port=80
+    networks:
+      - fitness-network
+
+volumes:
+  fitness-api-storage-prod:
+
+networks:
+  fitness-network:
+    driver: bridge

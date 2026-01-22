@@ -23,11 +23,22 @@ module FitnessApi
     #
     config.time_zone = 'Europe/Moscow'
     config.active_record.default_timezone = :utc
-  
+
     # config.eager_load_paths << Rails.root.join("extras")
+    allowed_origins =
+        [
+          'http://localhost:5173',
+          'http://127.0.0.1:5173',
+          'http://155.212.180.90:5173',
+          'https://dev.umniy-fitness.ru',
+          'http://dev.umniy-fitness.ru',
+          'https://umniy-fitness.ru',
+          'http://umniy-fitness.ru'
+        ]
+
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://155.212.180.90:5173']
+        origins allowed_origins
         resource '/api/*',
           headers: :any,
           methods: :any,
