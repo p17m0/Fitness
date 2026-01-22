@@ -70,3 +70,4 @@ gem 'devise'
 gem 'devise-jwt'
 gem "activeadmin_assets"
 gem "rack-cors"
+gem "mqtt"

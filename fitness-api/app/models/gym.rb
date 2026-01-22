@@ -1,5 +1,6 @@
 class Gym < ApplicationRecord
   has_many :gym_slots, dependent: :destroy
+  has_many :acs_devices, dependent: :destroy
 
   validates :name, :address, presence: true
   validates :capacity, numericality: { greater_than: 0 }
@@ -11,7 +12,7 @@ class Gym < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["gym_slots"]
+    ["gym_slots", "acs_devices"]
   end
 
   private
