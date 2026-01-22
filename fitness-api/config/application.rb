@@ -30,6 +30,8 @@ module FitnessApi
           'http://localhost:5173',
           'http://127.0.0.1:5173',
           'http://155.212.180.90:5173',
+          'http://dev.umniy-fitness.ru:5173',
+          'https://dev.umniy-fitness.ru:5173',
           'https://dev.umniy-fitness.ru',
           'http://dev.umniy-fitness.ru',
           'https://umniy-fitness.ru',
