@@ -9,7 +9,6 @@ services:
     ports:
       - "127.0.0.1:3001:3000"
     volumes:
-      - ./fitness-api:/rails
       - fitness-api-bundle-dev:/usr/local/bundle
       - fitness-api-storage-dev:/rails/storage
     environment:
