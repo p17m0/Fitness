@@ -10,12 +10,18 @@ services:
       - "127.0.0.1:3000:3000"
     volumes:
       - fitness-api-storage-prod:/rails/storage
+      - ./deploy/mosquitto/certs:/rails/config/mqtt:ro
     environment:
       - RAILS_ENV=production
       - RAILS_LOG_TO_STDOUT=1
       - RAILS_SERVE_STATIC_FILES=1
       - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
       - APP_HOSTS=umniy-fitness.ru
+      - ACS_MQTT_HOST=mqtt-broker
+      - ACS_MQTT_PORT=8883
+      - ACS_MQTT_CA_FILE=/rails/config/mqtt/ca.crt
+      - ACS_MQTT_CERT_FILE=/rails/config/mqtt/client.crt
+      - ACS_MQTT_KEY_FILE=/rails/config/mqtt/client.key
     networks:
       - fitness-network-prod
 
@@ -33,8 +39,21 @@ services:
     depends_on:
       - fitness-api
 
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    container_name: fitness-mqtt-prod
+    ports:
+      - "127.0.0.1:8883:8883"
+    volumes:
+      - ./deploy/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./deploy/mosquitto/certs:/mosquitto/config/certs:ro
+      - mqtt-data-prod:/mosquitto/data
+    networks:
+      - fitness-network-prod
+
 volumes:
   fitness-api-storage-prod:
+  mqtt-data-prod:
 
 networks:
   fitness-network-prod:

@@ -11,6 +11,7 @@ services:
     volumes:
       - fitness-api-bundle-dev:/usr/local/bundle
       - fitness-api-storage-dev:/rails/storage
+      - ./deploy/mosquitto/certs:/rails/config/mqtt:ro
     environment:
       - RAILS_ENV=development
       - PORT=3000
@@ -18,6 +19,11 @@ services:
       - RAILS_LOG_TO_STDOUT=1
       - APP_HOSTS=dev.umniy-fitness.ru
       - SOLID_QUEUE_IN_PUMA=true
+      - ACS_MQTT_HOST=mqtt-broker
+      - ACS_MQTT_PORT=8883
+      - ACS_MQTT_CA_FILE=/rails/config/mqtt/ca.crt
+      - ACS_MQTT_CERT_FILE=/rails/config/mqtt/client.crt
+      - ACS_MQTT_KEY_FILE=/rails/config/mqtt/client.key
     command: >
       sh -c "
         bundle install &&
@@ -47,9 +53,22 @@ services:
     depends_on:
       - fitness-api
 
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    container_name: fitness-mqtt-dev
+    ports:
+      - "127.0.0.1:8883:8883"
+    volumes:
+      - ./deploy/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./deploy/mosquitto/certs:/mosquitto/config/certs:ro
+      - mqtt-data-dev:/mosquitto/data
+    networks:
+      - fitness-network-dev
+
 volumes:
   fitness-api-bundle-dev:
   fitness-api-storage-dev:
+  mqtt-data-dev:
 
 networks:
   fitness-network-dev:
