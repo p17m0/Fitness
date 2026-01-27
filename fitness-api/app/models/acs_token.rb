@@ -13,6 +13,28 @@ class AcsToken < ApplicationRecord
   # validates :day_start_s, :day_end_s, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 86_399 }
   validate :validity_ranges
 
+  def self.ransackable_attributes(auth_object = nil)
+    [
+      "id",
+      "acs_device_id",
+      "client_id",
+      "booking_id",
+      "uid",
+      "valid_from",
+      "valid_to",
+      "day_start_s",
+      "day_end_s",
+      "remaining_uses",
+      "version",
+      "created_at",
+      "updated_at"
+    ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["acs_device", "client", "booking"]
+  end
+
   after_commit :enqueue_add_command, on: [:create, :update]
   after_commit :enqueue_remove_command, on: :destroy
 

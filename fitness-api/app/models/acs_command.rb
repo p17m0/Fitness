@@ -6,10 +6,32 @@ class AcsCommand < ApplicationRecord
     sent: "sent",
     acked: "acked",
     failed: "failed"
-  }
+  }, prefix: true
 
   validates :topic, :msg_id, :status, presence: true
   validates :payload, presence: true
+
+  def self.ransackable_attributes(auth_object = nil)
+    [
+      "id",
+      "acs_device_id",
+      "topic",
+      "msg_id",
+      "status",
+      "payload",
+      "retries",
+      "sent_at",
+      "ack_at",
+      "ack_ok",
+      "ack_reason",
+      "created_at",
+      "updated_at"
+    ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["acs_device"]
+  end
 
   after_create_commit :enqueue_dispatch_job
 

@@ -6,6 +6,28 @@ class AcsEvent < ApplicationRecord
 
   validates :event, :topic, :received_at, presence: true
 
+  def self.ransackable_attributes(auth_object = nil)
+    [
+      "id",
+      "acs_device_id",
+      "event",
+      "uid",
+      "reader",
+      "reason",
+      "topic",
+      "payload",
+      "raw_payload",
+      "ts",
+      "received_at",
+      "created_at",
+      "updated_at"
+    ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["acs_device"]
+  end
+
   private
 
   def normalize_uid
