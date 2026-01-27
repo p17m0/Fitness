@@ -5,6 +5,7 @@ require "rails/all"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
+require "activeadmin_assets"
 
 module FitnessApi
   class Application < Rails::Application
@@ -48,5 +49,8 @@ module FitnessApi
           max_age: 600
       end
     end
+
+    # Serve ActiveAdmin assets from the gem before hitting the app stack.
+    config.middleware.insert_before 0, ActiveAdminAssets::Middleware
   end
 end

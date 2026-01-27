@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
-  mount ActiveAdmin::Assets::Engine => "/active_admin_assets"
 
   devise_for :users,
     path: 'api/v1/users',
