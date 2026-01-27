@@ -34,9 +34,9 @@ trap cleanup SIGINT SIGTERM
 echo "🚀 Запускаем dev-серверы..."
 echo ""
 
-# Запускаем Rails сервер
+# Запускаем Rails сервер (Solid Queue внутри Puma)
 echo "📦 Запускаем Rails API (fitness-api)..."
-cd "$SCRIPT_DIR/fitness-api" && bin/rails s &
+cd "$SCRIPT_DIR/fitness-api" && SOLID_QUEUE_IN_PUMA="${SOLID_QUEUE_IN_PUMA:-true}" bin/rails s &
 RAILS_PID=$!
 
 # Небольшая пауза перед запуском второго сервера
