@@ -2,6 +2,7 @@ import { ApiClient } from './ApiClient';
 import {
   AuthSuccessResponse,
   Booking,
+  BookingQrResponse,
   Coach,
   CreateBookingRequest,
   CreateClientSubscriptionRequest,
@@ -129,6 +130,10 @@ export class BookingsService {
     if (params?.isExpired) searchParams.set('is_expired', 'true');
     const search = searchParams.toString();
     return this.client.request<Booking[]>(`/api/v1/bookings${search ? `?${search}` : ''}`);
+  }
+
+  qr() {
+    return this.client.request<BookingQrResponse>('/api/v1/bookings/qr');
   }
 
   create(payload: CreateBookingRequest) {

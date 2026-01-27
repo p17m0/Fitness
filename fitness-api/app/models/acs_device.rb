@@ -5,11 +5,11 @@ class AcsDevice < ApplicationRecord
   has_many :acs_events, dependent: :destroy
   has_many :acs_commands, dependent: :destroy
 
-  enum status: {
+  enum :status, {
     unknown: "unknown",
     online: "online",
     offline: "offline"
-  }, _prefix: true
+  }
 
   validates :device_id, presence: true, uniqueness: true
 

@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, Trash2, User, Clock, UserPlus, ShoppingCart } from 'lucide-react';
+import { Calendar, Trash2, User, Clock, UserPlus, ShoppingCart, QrCode } from 'lucide-react';
+import QRCode from 'qrcode';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/Toast';
-import { Booking, CoachSlot, ClientSubscription } from '../api/types';
+import { Booking, BookingQrResponse, CoachSlot, ClientSubscription } from '../api/types';
 import { ListSkeleton } from '../components/ui/Skeleton';
 import { NoBookingsState, AuthRequiredState } from '../components/ui/EmptyState';
-import { ConfirmModal } from '../components/ui/Modal';
+import { ConfirmModal, Modal } from '../components/ui/Modal';
 import { formatDate, formatDateTime, formatTime } from '../utils/format';
 import { HttpError } from '../api/ApiClient';
 
@@ -29,11 +30,22 @@ export const BookingsPage: React.FC = () => {
   const [loadingCoachSlots, setLoadingCoachSlots] = useState(false);
   const [assigningCoachId, setAssigningCoachId] = useState<number | null>(null);
   const [selectedCoachSlotId, setSelectedCoachSlotId] = useState<number | null>(null);
+  const [qrInfo, setQrInfo] = useState<BookingQrResponse | null>(null);
+  const [qrInfoLoading, setQrInfoLoading] = useState(false);
+  const [qrInfoError, setQrInfoError] = useState<string | null>(null);
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [qrPayload, setQrPayload] = useState<string | null>(null);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [qrError, setQrError] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrModalBooking, setQrModalBooking] = useState<Booking | null>(null);
   const coachSlotsRequestIdRef = useRef(0);
 
   const ready = useMemo(() => isAuthenticated, [isAuthenticated]);
   const subscriptionsCountLabel = showExpiredSubscriptions ? 'Архив' : 'Активные';
   const subscriptionsCount = clientSubscriptions.length;
+  const qrSummaryBooking = qrInfo?.booking ?? null;
+  const qrSummaryUid = qrInfo?.acs_token_uid ?? null;
 
   useEffect(() => {
     if (!ready) {
@@ -88,6 +100,66 @@ export const BookingsPage: React.FC = () => {
     return () => { aborted = true; };
   }, [ready, services, toast, showExpiredSubscriptions]);
 
+  useEffect(() => {
+    if (!ready || activeTab !== 'bookings' || showExpiredBookings) {
+      setQrInfo(null);
+      setQrInfoLoading(false);
+      setQrInfoError(null);
+      return;
+    }
+
+    let aborted = false;
+    setQrInfoLoading(true);
+    setQrInfoError(null);
+
+    services.bookings
+      .qr()
+      .then((data) => {
+        if (!aborted) setQrInfo(data);
+      })
+      .catch((err) => {
+        if (aborted) return;
+        setQrInfo(null);
+        setQrInfoError('Не удалось загрузить QR-код');
+        console.error(err);
+      })
+      .finally(() => {
+        if (!aborted) setQrInfoLoading(false);
+      });
+
+    return () => { aborted = true; };
+  }, [ready, activeTab, showExpiredBookings, services, bookings]);
+
+  useEffect(() => {
+    let aborted = false;
+    if (!qrPayload) {
+      setQrDataUrl(null);
+      setQrError(null);
+      setQrLoading(false);
+      return () => { aborted = true; };
+    }
+
+    setQrDataUrl(null);
+    setQrLoading(true);
+    setQrError(null);
+    QRCode.toDataURL(qrPayload, {
+      width: 280,
+      margin: 1,
+      errorCorrectionLevel: 'M'
+    })
+      .then((dataUrl) => {
+        if (!aborted) setQrDataUrl(dataUrl);
+      })
+      .catch(() => {
+        if (!aborted) setQrError('Не удалось сгенерировать QR-код');
+      })
+      .finally(() => {
+        if (!aborted) setQrLoading(false);
+      });
+
+    return () => { aborted = true; };
+  }, [qrPayload]);
+
   const handleCancelClick = (booking: Booking) => {
     setSelectedBooking(booking);
     setConfirmModalOpen(true);
@@ -113,6 +185,25 @@ export const BookingsPage: React.FC = () => {
       setSelectedBooking(null);
     }
   };
+
+  const openQrModal = (booking: Booking, tokenUid: string) => {
+    if (!tokenUid) {
+      toast.error('QR-код для этой брони ещё не готов');
+      return;
+    }
+    setQrModalBooking(booking);
+    setQrPayload(tokenUid);
+    setQrModalOpen(true);
+  };
+
+  const closeQrModal = () => {
+    setQrModalOpen(false);
+    setQrModalBooking(null);
+    setQrPayload(null);
+    setQrDataUrl(null);
+    setQrError(null);
+  };
+
 
   const closeCoachPanel = () => {
     coachSlotsRequestIdRef.current += 1;
@@ -246,6 +337,48 @@ export const BookingsPage: React.FC = () => {
         </div>
       </div>
 
+      {activeTab === 'bookings' && !showExpiredBookings && (
+        <div className="brutal-card">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-gray-dark border-4 border-gray-dark brutal-shadow-sm flex items-center justify-center">
+              <QrCode size={24} className="text-white" />
+            </div>
+            <div className="flex-1 space-y-2">
+              <h3 className="brutal-title text-xl md:text-2xl mb-0">QR на вход</h3>
+              {qrInfoLoading ? (
+                <p className="text-sm font-body text-gray-medium">Загрузка QR-кода...</p>
+              ) : qrInfoError ? (
+                <p className="text-sm font-body text-red-600">{qrInfoError}</p>
+              ) : qrSummaryBooking ? (
+                qrSummaryUid ? (
+                  <>
+                    <p className="text-sm font-body text-gray-medium">
+                      Покажите на входе для брони {formatDateTime(qrSummaryBooking.starts_at)}.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => openQrModal(qrSummaryBooking, qrSummaryUid)}
+                      className="brutal-button w-full sm:w-auto flex items-center gap-2"
+                    >
+                      <QrCode size={18} />
+                      Показать QR
+                    </button>
+                  </>
+                ) : (
+                  <p className="text-sm font-body text-gray-medium">
+                    QR-код появится, когда токен доступа будет готов.
+                  </p>
+                )
+              ) : (
+                <p className="text-sm font-body text-gray-medium">
+                  QR появится, когда будет активная бронь.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bookings Card */}
       {activeTab === 'bookings' && (
         <div className="brutal-card">
@@ -347,6 +480,15 @@ export const BookingsPage: React.FC = () => {
 
                 {!showExpiredBookings && (
                   <div className="pt-3 mt-1 border-t-3 border-gray-200 space-y-2">
+                    {qrSummaryBooking?.id === booking.id && qrSummaryUid && (
+                      <button
+                        className="brutal-button-secondary w-full flex items-center justify-center gap-2 text-sm"
+                        onClick={() => openQrModal(booking, qrSummaryUid)}
+                      >
+                        <QrCode size={16} />
+                        QR на вход
+                      </button>
+                    )}
                     {booking.coach_name ? (
                       <button
                         className="brutal-button-danger w-full flex items-center justify-center gap-2 text-sm"
@@ -615,6 +757,29 @@ export const BookingsPage: React.FC = () => {
         )}
         </div>
       )}
+
+      <Modal isOpen={qrModalOpen} onClose={closeQrModal} title="QR на вход" size="sm">
+        <div className="space-y-4 text-center">
+          {qrModalBooking && (
+            <div className="text-sm font-body text-gray-medium">
+              Бронь #{qrModalBooking.id} • {formatDateTime(qrModalBooking.starts_at)}
+            </div>
+          )}
+          <div className="flex items-center justify-center">
+            {qrLoading && <span className="loader" />}
+            {!qrLoading && qrDataUrl && (
+              <img
+                src={qrDataUrl}
+                alt="QR-код для входа"
+                className="w-64 h-64 bg-white border-4 border-gray-dark"
+              />
+            )}
+            {!qrLoading && qrError && (
+              <div className="text-sm font-body text-red-600">{qrError}</div>
+            )}
+          </div>
+        </div>
+      </Modal>
 
       {/* Confirm Modal */}
       <ConfirmModal

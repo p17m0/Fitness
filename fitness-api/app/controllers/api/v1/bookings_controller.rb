@@ -9,6 +9,21 @@ class Api::V1::BookingsController < Api::BaseController
       .map { |booking| serialize_booking(booking) }
   end
 
+  def qr
+    return render_error("Только клиент", :forbidden) unless current_client
+
+    booking = latest_qr_booking
+    unless booking
+      render json: { booking: nil, acs_token_uid: nil }
+      return
+    end
+
+    render json: {
+      booking: serialize_booking(booking),
+      acs_token_uid: token_uid_for_booking(booking)
+    }
+  end
+
   def create
     return render_error("Только клиент", :forbidden) unless current_client
 
@@ -32,6 +47,7 @@ class Api::V1::BookingsController < Api::BaseController
       gym_slot.book!
       coach_slot&.book!
       subscription.consume_visit!
+      Acs::TokenIssuer.issue_for_booking!(booking)
       render json: booking, status: :created and return
     end
   rescue ActiveRecord::RecordInvalid => e
@@ -88,6 +104,33 @@ class Api::V1::BookingsController < Api::BaseController
       coach_number: booking&.coach_slot&.coach&.user&.phone_number,
       starts_at: booking&.gym_slot&.starts_at
     }
+  end
+
+  def latest_qr_booking
+    current_client.bookings
+      .booked
+      .joins(:gym_slot)
+      .where("gym_slots.starts_at >= ?", Time.current)
+      .includes(:gym_slot, coach_slot: { coach: :user })
+      .order("gym_slots.starts_at ASC")
+      .first
+  end
+
+  def token_uid_for_booking(booking)
+    booking.acs_token&.uid
+    # slot = booking&.gym_slot
+    # return nil if slot.nil? || slot.starts_at.blank? || slot.ends_at.blank?
+
+    # valid_from = (slot.starts_at - Acs::TokenIssuer::WINDOW_BEFORE_START).to_i
+    # valid_to = slot.ends_at.to_i
+
+    # AcsToken.joins(:acs_device)
+    #   .where(client_id: booking.client_id)
+    #   .where(acs_devices: { gym_id: slot.gym_id })
+    #   .where(valid_from: valid_from, valid_to: valid_to)
+    #   .order(created_at: :desc)
+    #   .limit(1)
+    #   .pick(:uid)
   end
 
   def booking_params

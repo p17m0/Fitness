@@ -16,7 +16,7 @@ class Api::BaseController < ActionController::API
       current_user.roleable
     end
 
-    def render_error(message, status = :unprocessable_entity)
-      render json: { status: "error", message: message }, status: status
+    def render_error(message, backtrace = nil, status = :unprocessable_entity)
+      render json: { status: "error", message: message, backtrace: backtrace }, status: status
     end
 end

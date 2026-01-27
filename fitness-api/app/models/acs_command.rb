@@ -1,12 +1,12 @@
 class AcsCommand < ApplicationRecord
   belongs_to :acs_device
 
-  enum status: {
+  enum :status, {
     queued: "queued",
     sent: "sent",
     acked: "acked",
     failed: "failed"
-  }, _prefix: true
+  }
 
   validates :topic, :msg_id, :status, presence: true
   validates :payload, presence: true

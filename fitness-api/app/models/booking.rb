@@ -3,6 +3,8 @@ class Booking < ApplicationRecord
   belongs_to :gym_slot
   belongs_to :coach_slot, optional: true
 
+  has_one :acs_token, dependent: :destroy
+
   enum :status, { booked: "booked", cancelled: "cancelled" }, suffix: true
 
   validates :client, :gym_slot, presence: true

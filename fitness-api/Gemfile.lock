@@ -235,6 +235,8 @@ GEM
       logger
     mini_mime (1.1.5)
     minitest (5.27.0)
+    mqtt (0.7.0)
+      logger
     msgpack (1.8.0)
     net-imap (0.6.0)
       date
@@ -486,6 +488,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kamal
+  mqtt
   propshaft
   puma (>= 5.0)
   rack-cors

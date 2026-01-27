@@ -10,7 +10,82 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_21_090031) do
+  create_table "acs_commands", force: :cascade do |t|
+    t.datetime "ack_at"
+    t.boolean "ack_ok"
+    t.string "ack_reason"
+    t.integer "acs_device_id", null: false
+    t.datetime "created_at", null: false
+    t.string "msg_id", null: false
+    t.json "payload", null: false
+    t.integer "retries", default: 0, null: false
+    t.datetime "sent_at"
+    t.string "status", default: "queued", null: false
+    t.string "topic", null: false
+    t.datetime "updated_at", null: false
+    t.index ["acs_device_id", "msg_id"], name: "index_acs_commands_on_acs_device_id_and_msg_id", unique: true
+    t.index ["acs_device_id"], name: "index_acs_commands_on_acs_device_id"
+    t.index ["status"], name: "index_acs_commands_on_status"
+  end
+
+  create_table "acs_devices", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "device_id", null: false
+    t.integer "gym_id"
+    t.datetime "last_heartbeat_at"
+    t.string "last_net_status"
+    t.datetime "last_seen_at"
+    t.boolean "last_time_ok"
+    t.string "name"
+    t.datetime "resync_completed_at"
+    t.text "resync_error"
+    t.datetime "resync_failed_at"
+    t.boolean "resync_in_progress", default: false, null: false
+    t.datetime "resync_requested_at"
+    t.datetime "resync_started_at"
+    t.string "status", default: "unknown", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_acs_devices_on_device_id", unique: true
+    t.index ["gym_id"], name: "index_acs_devices_on_gym_id"
+  end
+
+  create_table "acs_events", force: :cascade do |t|
+    t.integer "acs_device_id", null: false
+    t.datetime "created_at", null: false
+    t.string "event", null: false
+    t.json "payload"
+    t.text "raw_payload"
+    t.integer "reader"
+    t.string "reason"
+    t.datetime "received_at", null: false
+    t.string "topic", null: false
+    t.integer "ts"
+    t.string "uid"
+    t.datetime "updated_at", null: false
+    t.index ["acs_device_id"], name: "index_acs_events_on_acs_device_id"
+    t.index ["event"], name: "index_acs_events_on_event"
+    t.index ["received_at"], name: "index_acs_events_on_received_at"
+  end
+
+  create_table "acs_tokens", force: :cascade do |t|
+    t.integer "acs_device_id", null: false
+    t.integer "booking_id"
+    t.integer "client_id"
+    t.datetime "created_at", null: false
+    t.integer "day_end_s", null: false
+    t.integer "day_start_s", null: false
+    t.integer "remaining_uses", null: false
+    t.string "uid", null: false
+    t.datetime "updated_at", null: false
+    t.integer "valid_from", null: false
+    t.integer "valid_to", null: false
+    t.integer "version", default: 1, null: false
+    t.index ["acs_device_id", "uid"], name: "index_acs_tokens_on_acs_device_id_and_uid", unique: true
+    t.index ["acs_device_id"], name: "index_acs_tokens_on_acs_device_id"
+    t.index ["client_id"], name: "index_acs_tokens_on_client_id"
+  end
+
   create_table "active_admin_comments", force: :cascade do |t|
     t.integer "author_id"
     t.string "author_type"
@@ -154,6 +229,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
     t.index ["roleable_type", "roleable_id"], name: "index_users_on_roleable"
   end
 
+  add_foreign_key "acs_commands", "acs_devices"
+  add_foreign_key "acs_devices", "gyms"
+  add_foreign_key "acs_events", "acs_devices"
+  add_foreign_key "acs_tokens", "acs_devices"
+  add_foreign_key "acs_tokens", "bookings"
+  add_foreign_key "acs_tokens", "clients"
   add_foreign_key "allowlisted_jwts", "users", on_delete: :cascade
   add_foreign_key "bookings", "clients"
   add_foreign_key "bookings", "coach_slots"

@@ -87,6 +87,12 @@ export interface Booking {
   coach_name?: string | null;
   coach_number?: string | null;
   starts_at: string;
+  acs_token_uid?: string | null;
+}
+
+export interface BookingQrResponse {
+  booking: Booking | null;
+  acs_token_uid: string | null;
 }
 
 export interface AuthSuccessResponse {

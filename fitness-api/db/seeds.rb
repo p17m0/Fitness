@@ -15,7 +15,6 @@ if Rails.env.development?
 end
 
 gyms = [
-  { name: "Главный зал", address: "Улица Спорта, 1", description: "Основной зал", capacity: 30 },
   { name: "Малый зал", address: "Улица Спорта, 2", description: "Небольшой зал", capacity: 15 }
 ].map do |attrs|
   Gym.find_or_create_by!(name: attrs[:name], address: attrs[:address]) do |gym|
@@ -24,6 +23,18 @@ gyms = [
     gym.opens_at = Time.zone.parse("08:00")
     gym.closes_at = Time.zone.parse("22:00")
   end
+end
+
+gyms.each do |gym|
+  device = AcsDevice.find_or_initialize_by(gym: gym)
+  if device.new_record?
+    device.device_id = "acs-#{gym.id}"
+    device.name = "ACS #{gym.name}"
+  else
+    device.device_id ||= "acs-#{gym.id}"
+    device.name ||= "ACS #{gym.name}"
+  end
+  device.save! if device.changed?
 end
 
 subscription_plans = [

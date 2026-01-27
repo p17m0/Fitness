@@ -8,7 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Dependencies
-node_modules
+node_modules/
+.npm-cache/*
 .pnp
 .pnp.js
 
@@ -17,6 +18,7 @@ dist
 dist-ssr
 build
 *.local
+
 
 # Editor directories and files
 .vscode/*

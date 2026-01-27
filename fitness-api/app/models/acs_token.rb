@@ -3,13 +3,14 @@ class AcsToken < ApplicationRecord
 
   belongs_to :acs_device
   belongs_to :client, optional: true
+  belongs_to :booking
 
   before_validation :normalize_uid
 
   validates :uid, presence: true, format: { with: /\A[0-9A-F]{8}\z/ }
   validates :valid_from, :valid_to, :day_start_s, :day_end_s, :remaining_uses, :version, presence: true
   validates :remaining_uses, numericality: { greater_than_or_equal_to: 0 }
-  validates :day_start_s, :day_end_s, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 86_399 }
+  # validates :day_start_s, :day_end_s, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 86_399 }
   validate :validity_ranges
 
   after_commit :enqueue_add_command, on: [:create, :update]

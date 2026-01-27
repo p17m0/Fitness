@@ -3,6 +3,7 @@ class CreateAcsTokens < ActiveRecord::Migration[8.1]
     create_table :acs_tokens do |t|
       t.references :acs_device, null: false, foreign_key: true
       t.references :client, foreign_key: true
+      t.references :booking, foreign_key: true
       t.string :uid, null: false
       t.integer :valid_from, null: false
       t.integer :valid_to, null: false

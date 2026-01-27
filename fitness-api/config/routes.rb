@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :client_subscriptions, only: [:index, :show, :create]
       resources :bookings, only: [:index, :create, :destroy] do
         post :create_coach_booking
+        get :qr, on: :collection
       end
       resources :coaches, only: [:index]
     end
