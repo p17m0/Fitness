@@ -14,7 +14,9 @@ import {
   RegisterRequest,
   ClientSubscription,
   SubscriptionPlan,
-  CoachSlot
+  CoachSlot,
+  CreatePaymentRequest,
+  PaymentResponse
 } from './types';
 
 export class AuthService {
@@ -148,6 +150,17 @@ export class BookingsService {
   cancel(bookingId: number) {
     return this.client.request<void>(`/api/v1/bookings/${bookingId}`, {
       method: 'DELETE'
+    });
+  }
+}
+
+export class PaymentsService {
+  constructor(private readonly client: ApiClient) {}
+
+  create(payload: CreatePaymentRequest) {
+    return this.client.request<PaymentResponse>('/api/v1/payments', {
+      method: 'POST',
+      body: payload
     });
   }
 }

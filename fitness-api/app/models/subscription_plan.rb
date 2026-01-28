@@ -1,5 +1,6 @@
 class SubscriptionPlan < ApplicationRecord
   has_many :client_subscriptions, dependent: :destroy
+  has_many :payments, dependent: :nullify
 
   validates :name, presence: true
   validates :visits_count, :duration_days, numericality: { greater_than: 0 }
@@ -10,6 +11,6 @@ class SubscriptionPlan < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["client_subscriptions"]
+    ["client_subscriptions", "payments"]
   end
 end

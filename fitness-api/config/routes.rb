@@ -23,6 +23,15 @@ Rails.application.routes.draw do
         post :create_coach_booking
       end
       resources :coaches, only: [:index]
+      resources :payments, only: [:create] do
+        collection do
+          post :three_ds, action: :three_ds_callback
+          post :_3ds, action: :three_ds_callback
+        end
+      end
+      post "payments/3ds", to: "payments#three_ds_callback"
+      post "payments/webhooks/pay", to: "payment_notifications#pay"
+      post "payments/webhooks/fail", to: "payment_notifications#fail"
     end
   end
 

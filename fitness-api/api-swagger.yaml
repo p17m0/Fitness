@@ -80,6 +80,60 @@ components:
         expires_at: { type: string, format: date-time, nullable: true }
         status: { type: string, enum: [active, expired] }
       required: [id, subscription_plan_id, remaining_visits, status]
+    Payment:
+      type: object
+      properties:
+        id: { type: integer }
+        client_id: { type: integer }
+        subscription_plan_id: { type: integer }
+        client_subscription_id: { type: integer, nullable: true }
+        amount: { type: integer }
+        currency: { type: string }
+        status: { type: string, enum: [pending, requires_3ds, paid, failed] }
+        provider: { type: string }
+        provider_transaction_id: { type: string, nullable: true }
+        provider_reason_code: { type: integer, nullable: true }
+        provider_message: { type: string, nullable: true }
+      required: [id, client_id, subscription_plan_id, amount, currency, status, provider]
+    PaymentCreateRequest:
+      type: object
+      properties:
+        payment:
+          type: object
+          properties:
+            subscription_plan_id: { type: integer }
+            card_cryptogram_packet: { type: string }
+            cardholder_name: { type: string, nullable: true }
+          required: [subscription_plan_id, card_cryptogram_packet]
+      required: [payment]
+    PaymentSuccessResponse:
+      type: object
+      properties:
+        status: { type: string, enum: [success] }
+        payment_id: { type: integer }
+        subscription_id: { type: integer, nullable: true }
+      required: [status, payment_id]
+    Payment3dsResponse:
+      type: object
+      properties:
+        status: { type: string, enum: [3ds_required] }
+        payment_id: { type: integer }
+        acs_url: { type: string }
+        pa_req: { type: string }
+        transaction_id: { type: string }
+        term_url: { type: string }
+      required: [status, payment_id, acs_url, pa_req, transaction_id, term_url]
+    CloudPaymentsWebhook:
+      type: object
+      properties:
+        TransactionId: { type: string }
+        InvoiceId: { type: string }
+        AccountId: { type: string }
+        Amount: { type: number }
+        Currency: { type: string }
+        ReasonCode: { type: integer }
+        Message: { type: string }
+      additionalProperties: true
     Booking:
       type: object
       properties:
@@ -422,6 +476,84 @@ paths:
       security: [{ bearerAuth: [] }]
       responses:
         "200": { description: OK }
+  /api/v1/payments:
+    post:
+      summary: Оплата абонемента (CloudPayments Checkout)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentCreateRequest"
+            example:
+              payment:
+                subscription_plan_id: 1
+                card_cryptogram_packet: "encrypted:xxxx"
+                cardholder_name: "IVAN IVANOV"
+      responses:
+        "200":
+          description: Успешная оплата или требуется 3DS
+          content:
+            application/json:
+              examples:
+                success:
+                  value:
+                    status: success
+                    payment_id: 10
+                    subscription_id: 5
+                three_ds:
+                  value:
+                    status: 3ds_required
+                    payment_id: 10
+                    acs_url: "https://acs.example.com"
+                    pa_req: "base64..."
+                    transaction_id: "123456"
+                    term_url: "https://api.example.com/api/v1/payments/3ds"
+        "422":
+          description: Ошибка оплаты
+  /api/v1/payments/three_ds:
+    post:
+      summary: Callback после 3‑D Secure
+      description: Принимает MD/PaRes от банка и завершает платёж.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                MD: { type: string }
+                PaRes: { type: string }
+      responses:
+        "302": { description: Редирект на фронт с результатом оплаты }
+        "404": { description: Платеж не найден }
+  /api/v1/payments/webhooks/pay:
+    post:
+      summary: Webhook Pay (CloudPayments)
+      description: Требуется заголовок Content-HMAC.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CloudPaymentsWebhook"
+      responses:
+        "200": { description: OK }
+        "401": { description: Invalid signature }
+  /api/v1/payments/webhooks/fail:
+    post:
+      summary: Webhook Fail (CloudPayments)
+      description: Требуется заголовок Content-HMAC.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CloudPaymentsWebhook"
+      responses:
+        "200": { description: OK }
+        "401": { description: Invalid signature }
   /api/v1/bookings:
     get:
       summary: Мои бронирования

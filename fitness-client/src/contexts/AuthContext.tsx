@@ -9,7 +9,8 @@ import {
   GymsService,
   ProgramsService,
   SubscriptionPlansService,
-  AuthService
+  AuthService,
+  PaymentsService
 } from '../api/services';
 import { AuthSuccessResponse, LoginRequest, RegisterRequest, User } from '../api/types';
 
@@ -29,6 +30,7 @@ interface AuthContextValue {
     coachSlots: CoachSlotsService;
     clientSubscriptions: ClientSubscriptionsService;
     bookings: BookingsService;
+    payments: PaymentsService;
   };
   login: (payload: LoginRequest) => Promise<void>;
   register: (payload: RegisterRequest) => Promise<void>;
@@ -97,7 +99,8 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       coaches: new CoachesService(apiClientRef.current!),
       coachSlots: new CoachSlotsService(apiClientRef.current!),
       clientSubscriptions: new ClientSubscriptionsService(apiClientRef.current!),
-      bookings: new BookingsService(apiClientRef.current!)
+      bookings: new BookingsService(apiClientRef.current!),
+      payments: new PaymentsService(apiClientRef.current!)
     }),
     []
   );

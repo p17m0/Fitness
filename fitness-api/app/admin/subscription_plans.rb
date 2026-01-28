@@ -68,6 +68,24 @@ ActiveAdmin.register SubscriptionPlan do
         column :created_at
       end
     end
+
+    panel "Платежи" do
+      table_for subscription_plan.payments.order(created_at: :desc).limit(20) do
+        column :id do |payment|
+          link_to "Платеж ##{payment.id}", admin_payment_path(payment)
+        end
+        column :client do |payment|
+          link_to "Клиент ##{payment.client_id}", admin_client_path(payment.client)
+        end
+        column :amount
+        column :currency
+        column :status do |payment|
+          status_tag payment.status
+        end
+        column :provider_transaction_id
+        column :created_at
+      end
+    end
   end
 
   form do |f|

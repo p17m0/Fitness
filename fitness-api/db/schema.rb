@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_28_120000) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.integer "author_id"
     t.string "author_type"
@@ -113,6 +113,25 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "payments", force: :cascade do |t|
+    t.integer "amount", null: false
+    t.integer "client_id", null: false
+    t.integer "client_subscription_id"
+    t.datetime "created_at", null: false
+    t.string "currency", default: "RUB", null: false
+    t.string "provider", default: "cloudpayments", null: false
+    t.string "provider_message"
+    t.integer "provider_reason_code"
+    t.string "provider_transaction_id"
+    t.string "status", default: "pending", null: false
+    t.integer "subscription_plan_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_payments_on_client_id"
+    t.index ["client_subscription_id"], name: "index_payments_on_client_subscription_id"
+    t.index ["provider_transaction_id"], name: "index_payments_on_provider_transaction_id"
+    t.index ["subscription_plan_id"], name: "index_payments_on_subscription_plan_id"
+  end
+
   create_table "programs", force: :cascade do |t|
     t.integer "coach_id"
     t.datetime "created_at", null: false
@@ -162,4 +181,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_25_111500) do
   add_foreign_key "client_subscriptions", "subscription_plans"
   add_foreign_key "coach_slots", "coaches"
   add_foreign_key "gym_slots", "gyms"
+  add_foreign_key "payments", "client_subscriptions"
+  add_foreign_key "payments", "clients"
+  add_foreign_key "payments", "subscription_plans"
 end

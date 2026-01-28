@@ -140,5 +140,28 @@ export interface CreateClientSubscriptionRequest {
   };
 }
 
+export interface CreatePaymentRequest {
+  payment: {
+    subscription_plan_id: number;
+    card_cryptogram_packet: string;
+    cardholder_name?: string;
+  };
+}
+
+export type PaymentResponse =
+  | {
+      status: 'success';
+      payment_id: number;
+      subscription_id?: number | null;
+    }
+  | {
+      status: '3ds_required';
+      payment_id: number;
+      acs_url: string;
+      pa_req: string;
+      transaction_id: string;
+      term_url: string;
+    };
+
 
 

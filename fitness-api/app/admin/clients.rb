@@ -59,6 +59,24 @@ ActiveAdmin.register Client do
       end
     end
 
+    panel "Платежи" do
+      table_for client.payments.order(created_at: :desc).limit(20) do
+        column :id do |payment|
+          link_to "Платеж ##{payment.id}", admin_payment_path(payment)
+        end
+        column :subscription_plan do |payment|
+          link_to payment.subscription_plan.name, admin_subscription_plan_path(payment.subscription_plan)
+        end
+        column :amount
+        column :currency
+        column :status do |payment|
+          status_tag payment.status
+        end
+        column :provider_transaction_id
+        column :created_at
+      end
+    end
+
     panel "Бронирования" do
       table_for client.bookings.order(created_at: :desc).limit(20) do
         column :id

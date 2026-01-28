@@ -398,6 +398,20 @@ export const NewBookingPage: React.FC = () => {
                 </div>
               )}
             </div>
+
+            <div className="flex justify-start">
+              <button
+                type="button"
+                className="brutal-button-secondary"
+                onClick={() => {
+                  setStep(1);
+                  setSelectedSlotId(null);
+                  setSelectedCoachSlotId(null);
+                }}
+              >
+                Назад к выбору зала
+              </button>
+            </div>
           </div>
         )}
 
@@ -436,6 +450,19 @@ export const NewBookingPage: React.FC = () => {
                 className="text-sm font-body text-orange-primary hover:underline mt-3"
               >
                 Изменить дату/время
+              </button>
+            </div>
+
+            <div className="flex justify-start">
+              <button
+                type="button"
+                className="brutal-button-secondary"
+                onClick={() => {
+                  setStep(2);
+                  setSelectedCoachSlotId(null);
+                }}
+              >
+                Назад к выбору времени
               </button>
             </div>
 

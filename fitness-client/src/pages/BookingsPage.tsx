@@ -14,6 +14,7 @@ export const BookingsPage: React.FC = () => {
   const { isAuthenticated, services, user } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
+  const toastRef = useRef(toast);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'bookings' | 'subscriptions'>('bookings');
@@ -36,6 +37,10 @@ export const BookingsPage: React.FC = () => {
   const subscriptionsCount = clientSubscriptions.length;
 
   useEffect(() => {
+    toastRef.current = toast;
+  }, [toast]);
+
+  useEffect(() => {
     if (!ready) {
       setLoading(false);
       return;
@@ -49,7 +54,7 @@ export const BookingsPage: React.FC = () => {
         if (!aborted) setBookings(data);
       })
       .catch((err) => {
-        toast.error('Не удалось загрузить бронирования');
+        toastRef.current.error('Не удалось загрузить бронирования');
         console.error(err);
       })
       .finally(() => {
@@ -78,7 +83,7 @@ export const BookingsPage: React.FC = () => {
           if (!aborted) setClientSubscriptions([]);
           return;
         }
-        toast.error('Не удалось загрузить абонементы');
+        toastRef.current.error('Не удалось загрузить абонементы');
         console.error(err);
       })
       .finally(() => {
@@ -86,7 +91,7 @@ export const BookingsPage: React.FC = () => {
       });
 
     return () => { aborted = true; };
-  }, [ready, services, toast, showExpiredSubscriptions]);
+  }, [ready, services, showExpiredSubscriptions]);
 
   const handleCancelClick = (booking: Booking) => {
     setSelectedBooking(booking);
