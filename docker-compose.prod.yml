@@ -47,6 +47,7 @@ services:
     volumes:
       - ./deploy/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ./deploy/mosquitto/certs:/mosquitto/config/certs:ro
+      - ./logs/mosquitto-prod:/mosquitto/log
       - mqtt-data-prod:/mosquitto/data
     networks:
       - fitness-network-prod
