@@ -37,6 +37,36 @@ services:
     networks:
       - fitness-network-dev
 
+  fitness-acs-mqtt-listener:
+    build:
+      context: ./fitness-api
+      dockerfile: Dockerfile.dev
+    container_name: fitness-acs-mqtt-listener-dev
+    volumes:
+      - fitness-api-bundle-dev:/usr/local/bundle
+      - fitness-api-storage-dev:/rails/storage
+      - ./deploy/mosquitto/certs:/rails/config/mqtt:ro
+    environment:
+      - RAILS_ENV=development
+      - BUNDLE_PATH=/usr/local/bundle
+      - RAILS_LOG_TO_STDOUT=1
+      - ACS_MQTT_HOST=mqtt-broker
+      - ACS_MQTT_PORT=8883
+      - ACS_MQTT_CA_FILE=/rails/config/mqtt/ca.crt
+      - ACS_MQTT_CERT_FILE=/rails/config/mqtt/client.crt
+      - ACS_MQTT_KEY_FILE=/rails/config/mqtt/client.key
+    command: >
+      sh -c "
+        bundle install &&
+        bin/rails acs:mqtt:listen
+      "
+    stdin_open: true
+    tty: true
+    depends_on:
+      - mqtt-broker
+    networks:
+      - fitness-network-dev
+
   fitness-client:
     build:
       context: ./fitness-client
