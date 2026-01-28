@@ -31,7 +31,7 @@ gyms.each do |gym|
     device.device_id = "acs-#{gym.id}"
     device.name = "ACS #{gym.name}"
   else
-    device.device_id ||= "acs-#{gym.id}"
+    device.device_id ||= "ram-01"
     device.name ||= "ACS #{gym.name}"
   end
   device.save! if device.changed?
