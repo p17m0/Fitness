@@ -4,6 +4,7 @@ module Acs
       "acs/+/tele/log",
       "acs/+/tele/heartbeat",
       "acs/+/tele/log_debug",
+      "acs/+/status/online",
       "acs/+/ack",
       "acs/+/ctrl/resync/request"
     ].freeze

@@ -14,6 +14,8 @@ module Acs
         handle_heartbeat(device, topic, raw_payload)
       when "tele/log_debug"
         handle_debug(device, topic, raw_payload)
+      when "status/online",
+        handle_status(device, topic, raw_payload, parsed[:suffix])
       when "ack"
         handle_ack(device, topic, raw_payload)
       when "ctrl/resync/request"
@@ -79,6 +81,23 @@ module Acs
       )
     end
 
+    def self.handle_status(device, topic, raw_payload, suffix)
+      payload = parse_json(raw_payload)
+      status = suffix.split("/")[1]
+
+      create_event(
+        device,
+        topic: topic,
+        event: "status_#{status}",
+        payload: payload,
+        raw_payload: raw_payload
+      )
+
+      updates = { status: status }
+      updates[:last_seen_at] = Time.current if status == "online"
+      device.update!(updates)
+    end
+
     def self.handle_ack(device, topic, raw_payload)
       payload = parse_json(raw_payload)
       if payload.nil?
@@ -132,7 +151,7 @@ module Acs
       )
     end
 
-    private_class_method :handle_log, :handle_heartbeat, :handle_debug, :handle_ack, :handle_resync_request,
-                         :parse_json, :create_event
+    private_class_method :handle_log, :handle_heartbeat, :handle_debug, :handle_status, :handle_ack,
+                         :handle_resync_request, :parse_json, :create_event
   end
 end
