@@ -37,7 +37,7 @@ module Acs
     end
 
     def self.ack_timeout
-      Integer(ENV.fetch("ACS_MQTT_ACK_TIMEOUT", "10"))
+      Integer(ENV.fetch("ACS_MQTT_ACK_TIMEOUT", "40"))
     end
 
     def self.reconnect_delay

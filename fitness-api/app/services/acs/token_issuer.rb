@@ -56,19 +56,19 @@ module Acs
     end
 
     def valid_from
-      seconds_since_midnight_utc(token_window_start)
+      token_window_start.to_i
     end
 
     def valid_to
-      seconds_since_midnight_utc(token_window_end)
+      token_window_end.to_i
     end
 
     def day_start_s
-      seconds_since_midnight_utc(token_window_start)
+      0
     end
 
     def day_end_s
-      seconds_since_midnight_utc(token_window_end)
+      86_399
     end
 
     def token_window_start
@@ -77,10 +77,6 @@ module Acs
 
     def token_window_end
       booking.gym_slot.ends_at
-    end
-
-    def seconds_since_midnight_utc(time)
-      time.utc.seconds_since_midnight.to_i
     end
   end
 end

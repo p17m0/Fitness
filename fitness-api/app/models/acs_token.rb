@@ -1,5 +1,6 @@
 class AcsToken < ApplicationRecord
   TOKEN_FIELDS = %w[uid valid_from valid_to day_start_s day_end_s remaining_uses version acs_device_id].freeze
+  MIN_UNIX_TS = 1_000_000_000
 
   belongs_to :acs_device
   belongs_to :client, optional: true
@@ -10,8 +11,8 @@ class AcsToken < ApplicationRecord
   validates :uid, presence: true, format: { with: /\A[0-9A-F]{8}\z/ }
   validates :valid_from, :valid_to, :day_start_s, :day_end_s, :remaining_uses, :version, presence: true
   validates :remaining_uses, numericality: { greater_than_or_equal_to: 0 }
-  # validates :day_start_s, :day_end_s, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 86_399 }
   validate :validity_ranges
+  validate :token_window_fields
 
   def self.ransackable_attributes(auth_object = nil)
     [
@@ -63,6 +64,24 @@ class AcsToken < ApplicationRecord
 
     if day_start_s.present? && day_end_s.present? && day_end_s < day_start_s
       errors.add(:day_end_s, "must be greater than or equal to day_start_s")
+    end
+  end
+
+  def token_window_fields
+    if day_start_s.present? && day_start_s != 0
+      errors.add(:day_start_s, "must be 0")
+    end
+
+    if day_end_s.present? && day_end_s != 86_399
+      errors.add(:day_end_s, "must be 86399")
+    end
+
+    if valid_from.present? && valid_from < MIN_UNIX_TS
+      errors.add(:valid_from, "must be unix timestamp")
+    end
+
+    if valid_to.present? && valid_to < MIN_UNIX_TS
+      errors.add(:valid_to, "must be unix timestamp")
     end
   end
 
