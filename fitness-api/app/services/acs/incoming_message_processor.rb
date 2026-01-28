@@ -45,6 +45,11 @@ module Acs
         reason: payload["reason"]
       )
 
+      if event_name == "scan_granted" && payload["uid"].present?
+        uid = payload["uid"].to_s.upcase
+        device.acs_tokens.where(uid: uid).destroy
+      end
+
       device.update!(status: event_name == "acs_offline" ? "offline" : "online")
     end
 
