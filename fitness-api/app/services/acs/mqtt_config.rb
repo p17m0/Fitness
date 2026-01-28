@@ -44,6 +44,10 @@ module Acs
       Integer(ENV.fetch("ACS_MQTT_RECONNECT_DELAY", "1"))
     end
 
+    def self.device_offline_after
+      Integer(ENV.fetch("ACS_DEVICE_OFFLINE_AFTER", "65"))
+    end
+
     def self.qos
       Integer(ENV.fetch("ACS_MQTT_QOS", "1"))
     end
