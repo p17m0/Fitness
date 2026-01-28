@@ -1,12 +1,19 @@
 require "mqtt"
+require "openssl"
 
 module Acs
   class MqttClient
     def self.connect
+      ssl_options = if MqttConfig.insecure_ssl?
+        { verify_mode: OpenSSL::SSL::VERIFY_NONE }
+      else
+        true
+      end
+
       MQTT::Client.connect(
         host: MqttConfig.host,
         port: MqttConfig.port,
-        ssl: true,
+        ssl: ssl_options,
         cert_file: MqttConfig.cert_file,
         key_file: MqttConfig.key_file,
         ca_file: MqttConfig.ca_file,

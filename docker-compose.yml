@@ -20,11 +20,12 @@ services:
       - RAILS_SERVE_STATIC_FILES=1
       - APP_HOSTS=dev.umniy-fitness.ru
       - SOLID_QUEUE_IN_PUMA=true
-      - ACS_MQTT_HOST=localhost
+      - ACS_MQTT_HOST=mqtt-broker
       - ACS_MQTT_PORT=8883
       - ACS_MQTT_CA_FILE=/rails/config/mqtt/ca.crt
       - ACS_MQTT_CERT_FILE=/rails/config/mqtt/client.crt
       - ACS_MQTT_KEY_FILE=/rails/config/mqtt/client.key
+      - ACS_MQTT_INSECURE=true
     command: >
       sh -c "
         bundle install &&

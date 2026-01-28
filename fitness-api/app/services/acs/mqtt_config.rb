@@ -47,5 +47,9 @@ module Acs
     def self.qos
       Integer(ENV.fetch("ACS_MQTT_QOS", "1"))
     end
+
+    def self.insecure_ssl?
+      ENV.fetch("ACS_MQTT_INSECURE", "false").casecmp("true").zero?
+    end
   end
 end
