@@ -14,7 +14,7 @@ module Acs
         handle_heartbeat(device, topic, raw_payload)
       when "tele/log_debug"
         handle_debug(device, topic, raw_payload)
-      when "status/online",
+      when "status/online"
         handle_status(device, topic, raw_payload, parsed[:suffix])
       when "ack"
         handle_ack(device, topic, raw_payload)
@@ -83,7 +83,12 @@ module Acs
 
     def self.handle_status(device, topic, raw_payload, suffix)
       payload = parse_json(raw_payload)
-      status = suffix.split("/")[1]
+      status =
+        if payload.is_a?(Hash) && payload.key?("online")
+          payload["online"] ? "online" : "offline"
+        else
+          suffix.split("/")[1]
+        end
 
       create_event(
         device,
