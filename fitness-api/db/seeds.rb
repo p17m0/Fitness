@@ -28,10 +28,10 @@ end
 gyms.each do |gym|
   device = AcsDevice.find_or_initialize_by(gym: gym)
   if device.new_record?
-    device.device_id = "acs-#{gym.id}"
+    device.device_id = "acs-zh"
     device.name = "ACS #{gym.name}"
   else
-    device.device_id ||= "ram-01"
+    device.device_id ||= "acs-zh"
     device.name ||= "ACS #{gym.name}"
   end
   device.save! if device.changed?
