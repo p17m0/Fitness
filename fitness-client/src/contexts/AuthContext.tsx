@@ -53,10 +53,21 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const [error, setError] = useState<string | null>(null);
 
   const tokenRef = useRef<string | null>(token);
+  const resetAuth = () => {
+    tokenRef.current = null;
+    setToken(null);
+    setUser(null);
+  };
+  const handleUnauthorized = () => {
+    resetAuth();
+    if (window.location.pathname !== '/auth') {
+      window.location.replace('/auth');
+    }
+  };
   const apiClientRef = useRef<ApiClient>();
 
   if (!apiClientRef.current) {
-    apiClientRef.current = new ApiClient(API_BASE_URL, () => tokenRef.current);
+    apiClientRef.current = new ApiClient(API_BASE_URL, () => tokenRef.current, handleUnauthorized);
   }
 
   useEffect(() => {

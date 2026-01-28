@@ -18,10 +18,12 @@ interface RequestOptions {
 export class ApiClient {
   private readonly baseUrl: string;
   private readonly getToken?: () => string | null;
+  private readonly onUnauthorized?: () => void;
 
-  constructor(baseUrl: string, getToken?: () => string | null) {
+  constructor(baseUrl: string, getToken?: () => string | null, onUnauthorized?: () => void) {
     this.baseUrl = baseUrl.replace(/\/+$/, '');
     this.getToken = getToken;
+    this.onUnauthorized = onUnauthorized;
   }
 
   async request<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -42,6 +44,9 @@ export class ApiClient {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        this.onUnauthorized?.();
+      }
       const message = await this.safeReadError(response);
       throw new HttpError(message || `HTTP ${response.status}`, response.status);
     }
