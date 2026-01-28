@@ -20,7 +20,7 @@ services:
       - RAILS_SERVE_STATIC_FILES=1
       - APP_HOSTS=dev.umniy-fitness.ru
       - SOLID_QUEUE_IN_PUMA=true
-      - ACS_MQTT_HOST=localhost
+      - ACS_MQTT_HOST=mqtt-broker
       - ACS_MQTT_PORT=8883
       - ACS_MQTT_CA_FILE=/rails/config/mqtt/ca.crt
       - ACS_MQTT_CERT_FILE=/rails/config/mqtt/client.crt
@@ -59,7 +59,7 @@ services:
     image: eclipse-mosquitto:2
     container_name: fitness-mqtt-dev
     ports:
-      - "127.0.0.1:8883:8883"
+      - "8883:8883"
     volumes:
       - ./deploy/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ./deploy/mosquitto/certs:/mosquitto/config/certs:ro
